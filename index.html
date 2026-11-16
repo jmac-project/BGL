@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Board Game League</title>
+<style>
+:root{--bg:#f6f6f3;--card:#fff;--bd:#e4e3dd;--tx:#1f2421;--mu:#6b7069;--ac:#2f5d50;--ac2:#e8efec;--er:#a33}
+@media(prefers-color-scheme:dark){:root{--bg:#161816;--card:#1f221f;--bd:#33372f;--tx:#ecece7;--mu:#9a9f96;--ac:#7fb5a3;--ac2:#243029;--er:#e88}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+h1{font-size:20px;margin:0;font-weight:650}h2{font-size:16px;margin:0 0 10px}
+nav{display:flex;gap:4px;border-bottom:1px solid var(--bd);margin-bottom:16px;overflow-x:auto}
+nav button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;color:var(--mu);font:inherit;cursor:pointer;white-space:nowrap}
+nav button.on{color:var(--ac);border-color:var(--ac);font-weight:600}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:16px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.slot{border:1px solid var(--bd);border-radius:8px;padding:10px;min-height:76px}
+.slot.full{background:var(--ac2)}.slot small,.mu{color:var(--mu)}
+.big{font-size:30px;font-weight:700;color:var(--ac);line-height:1.1}
+input,select,button.b{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;max-width:100%}
+button.b{cursor:pointer}button.p{background:var(--ac);color:var(--card);border-color:var(--ac)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.chk{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--bd);border-radius:20px;padding:3px 10px;margin:0 6px 6px 0;font-size:14px}
+.tbl{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}th{color:var(--mu);font-weight:500}
+.bar{height:6px;background:var(--bd);border-radius:3px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+#msg{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 16px;border-radius:8px;display:none;max-width:90%}
+.top{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.top .card{margin:0;text-align:center}.err{color:var(--er)}
+</style></head><body><div class="wrap" id="app">Loading…</div><div id="msg"></div>
+<script>
+const API_URL='PASTE_YOUR_WEB_APP_URL_HERE';
+const S={player:localStorage.getItem('bgl_p')||'',pass:sessionStorage.getItem('bgl_a')||'',tab:'board',d:null,s:null,g:null};
+const $=q=>document.querySelector(q),val=id=>$('#'+id).value;
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const today=()=>new Date().toISOString().slice(0,10);
+const ord=i=>['1st','2nd','3rd'][i]||(i+1)+'th';
+const toggle=(a,v,on)=>{const i=a.indexOf(v);if(on&&i<0)a.push(v);if(!on&&i>=0)a.splice(i,1)};
+function flash(t){const m=$('#msg');m.textContent=t;m.style.display='block';setTimeout(()=>m.style.display='none',2800)}
+async function load(){
+  try{S.d=await (await fetch(API_URL+'?'+new URLSearchParams({player:S.player,pass:S.pass}))).json();S.err=''}
+  catch(e){S.err='Could not reach the server. Check API_URL and the deployment.'}
+  render()}
+async function post(b){
+  flash('Saving…');
+  try{const r=await (await fetch(API_URL,{method:'POST',body:JSON.stringify(Object.assign({player:S.player,pass:S.pass},b))})).json();
+    if(r.error){flash(r.error);return false}flash('Saved');await load();return true}
+  catch(e){flash('Network error');return false}}
+function setPlayer(v){S.player=v;localStorage.setItem('bgl_p',v);S.s=S.g=null;load()}
+function tab(t){S.tab=t;render()}
+function render(){
+  const d=S.d,a=$('#app');
+  if(!d){a.innerHTML=`<p class="${S.err?'err':''}">${esc(S.err||'Loading…')}</p>`;return}
+  const tabs=[['board','Leaderboard'],['me','My progress'],['log','Log'],['admin','Admin']];
+  a.innerHTML=`<header><h1>🎲 Board Game League</h1>
+   <select onchange="setPlayer(this.value)"><option value="">Who are you?</option>${d.players.map(p=>`<option ${p===S.player?'selected':''}>${esc(p)}</option>`).join('')}</select></header>
+   <nav>${tabs.map(t=>`<button class="${S.tab===t[0]?'on':''}" onclick="tab('${t[0]}')">${t[1]}</button>`).join('')}</nav>
+   ${({board:board,me:me,log:log,admin:admin})[S.tab]()}`}
+const need=()=>'<div class="card mu">Pick your name at the top to continue.</div>';
+function board(){const t=S.d.top3;
+  return `<h2>Top 3</h2><div class="top">${t.map(p=>`<div class="card"><div class="mu">Rank ${p.rank}</div><h2>${esc(p.name)}</h2><div class="big">${p.total}</div><div class="mu">points</div></div>`).join('')||'<div class="card mu">No scores yet.</div>'}</div>`}
+function me(){
+  const m=S.d.me;if(!S.player)return need();if(!m)return '<div class="card mu">No data for you yet.</div>';
+  const bonus=[['Hosting',m.hosting],['Attending',m.attending],['Teaching',m.teaching],['Learning',m.learning]];
+  return `<div class="grid"><div class="card"><div class="mu">Total points</div><div class="big">${m.total}</div></div>
+   <div class="card"><div class="mu">Rank</div><div class="big">${m.rank}</div></div>
+   <div class="card"><div class="mu">Qualifying games</div><div class="big">${m.slots.filter(s=>s.game).length}<small class="mu"> / 10</small></div></div>
+   <div class="card"><div class="mu">Playing points</div><div class="big">${m.playing}<small class="mu"> / 158</small></div></div></div>
+   <div class="card"><h2>Top 10 qualifying games</h2><div class="grid">${m.slots.map(s=>`<div class="slot ${s.game?'full':''}"><small>${s.slot}</small><div>${s.game?esc(s.game):'<span class="mu">Not yet played</span>'}</div>${s.game?`<b>${s.pts} pts</b>`:''}</div>`).join('')}</div></div>
+   <div class="card"><h2>Bonus points</h2><div class="grid">${bonus.map(b=>`<div><div class="row" style="justify-content:space-between;margin:0"><span>${b[0]}</span><span>${b[1]} / 10</span></div><div class="bar"><i style="width:${b[1]*10}%"></i></div></div>`).join('')}</div>
+   <p class="mu">Accolades +${m.acc} · Demerits −${m.dem}</p></div>
+   <div class="card"><h2>Game history</h2><div class="tbl"><table><tr><th>Date</th><th>Game</th><th>Tier</th><th>Place</th><th>Pts</th></tr>
+   ${m.history.slice().reverse().map(h=>`<tr><td>${esc(h.date)}</td><td>${esc(h.game)}</td><td>${h.tier}</td><td>${ord(h.place-1)}</td><td>${h.pts}</td></tr>`).join('')||'<tr><td colspan=5 class="mu">No games yet</td></tr>'}</table></div></div>`}
+function log(){
+  if(!S.player)return need();
+  const d=S.d,p=S.player,s=S.s=S.s||{date:today(),hosts:[p],attendees:[]};
+  if(!s.hosts.includes(p))s.hosts.unshift(p);
+  const g=S.g=S.g||{session:'',game:'',places:['','',''],teachers:[],learners:[]};
+  const mine=d.sessions.filter(x=>x.hosts.includes(p)||x.attendees.includes(p)).slice().reverse();
+  const ss=d.sessions.find(x=>x.id===g.session),ppl=ss?ss.hosts.concat(ss.attendees):[],gm=d.games.find(x=>x.name===g.game);
+  const chosen=g.places.filter(Boolean);
+  const cb=(arr,n,fn,dis)=>`<label class="chk"><input type="checkbox" ${arr.includes(n)?'checked':''} ${dis?'disabled':''} onchange="${fn}('${esc(n).replace(/'/g,"\\'")}',this.checked)">${esc(n)}</label>`;
+  return `<div class="card"><h2>1 · New session (host)</h2>
+   <div class="row"><input type="date" value="${s.date}" onchange="S.s.date=this.value"></div>
+   <div class="mu">Hosts (up to 6)</div>${d.players.map(n=>cb(s.hosts,n,'sH',n===p)).join('')}
+   <div class="mu">Attendees</div>${d.players.filter(n=>!s.hosts.includes(n)).map(n=>cb(s.attendees,n,'sA')).join('')}
+   <div class="row"><button class="b p" onclick="saveSession()">Create session</button></div></div>
+  <div class="card"><h2>2 · Log a game</h2>
+   <div class="row"><select onchange="S.g={session:this.value,game:S.g.game,places:['','',''],teachers:[],learners:[]};render()"><option value="">Select session</option>${mine.map(x=>`<option value="${x.id}" ${x.id===g.session?'selected':''}>${esc(x.date)} · hosted by ${esc(x.hosts.join(', '))}</option>`).join('')}</select>
+   <select onchange="S.g.game=this.value;render()"><option value="">Select game</option>${d.games.map(x=>`<option ${x.name===g.game?'selected':''}>${esc(x.name)} (T${x.tier})</option>`).join('')}</select></div>
+   ${ss?g.places.map((v,i)=>`<div class="row"><b style="width:36px">${ord(i)}</b><select onchange="S.g.places[${i}]=this.value;render()"><option value="">Player</option>${ppl.filter(n=>n===v||!chosen.includes(n)).map(n=>`<option ${n===v?'selected':''}>${esc(n)}</option>`).join('')}</select><span class="mu">${gm&&g.places.length>=3?d.table[Math.min(i,3)][gm.tier-1]+' pts':''}</span></div>`).join(''):''}
+   ${ss?`<div class="row"><button class="b" onclick="if(S.g.places.length<7){S.g.places.push('');render()}">+ Place</button><button class="b" onclick="if(S.g.places.length>3){S.g.places.pop();render()}">− Place</button></div>
+   <div class="mu">Teachers</div>${chosen.map(n=>cb(g.teachers,n,'gT')).join('')||'<span class="mu">Choose players first</span>'}
+   <div class="mu">Learned this game</div>${chosen.map(n=>cb(g.learners,n,'gL')).join('')}
+   <div class="row"><button class="b p" onclick="savePlay()">Submit game</button></div>`:'<p class="mu">Pick a session to continue.</p>'}</div>`}
+function sH(n,on){toggle(S.s.hosts,n,on);toggle(S.s.attendees,n,false);render()}
+function sA(n,on){toggle(S.s.attendees,n,on)}
+function gT(n,on){toggle(S.g.teachers,n,on)}
+function gL(n,on){toggle(S.g.learners,n,on)}
+async function saveSession(){if(S.s.hosts.length>6)return flash('Maximum 6 hosts');if(await post(Object.assign({action:'addSession'},S.s)))S.s=null,render()}
+async function savePlay(){
+  const g=S.g,pl=g.places.filter(Boolean);
+  if(pl.length<3||pl.length!==g.places.length||!pl.includes(S.player)||!g.game)return flash('Need a game, 3-7 players (no blanks), including you');
+  const r=await post({action:'addPlay',session:g.session,game:g.game.replace(/ \(T\d\)$/,''),places:pl,teachers:g.teachers.filter(x=>pl.includes(x)),learners:g.learners.filter(x=>pl.includes(x))});
+  if(r){S.g=null;render()}}
+function admin(){
+  const d=S.d;
+  if(!d.admin)return `<div class="card"><h2>Admin access</h2><div class="row"><input id="pw" type="password" placeholder="Passcode"><button class="b p" onclick="S.pass=val('pw');sessionStorage.setItem('bgl_a',S.pass);load()">Unlock</button></div>${S.pass?'<p class="err">Passcode not accepted.</p>':''}</div>`;
+  const opts=(a,id)=>`<select id="${id}">${a.map(x=>`<option>${esc(x)}</option>`).join('')}</select>`;
+  const del=(t,id)=>`<button class="b" onclick="if(confirm('Delete this entry?'))post({action:'delete',tab:'${t}',id:'${id}'})">Delete</button>`;
+  return `<div class="card"><h2>Full ranking</h2><div class="tbl"><table><tr><th>#</th><th>Player</th><th>Playing</th><th>Host</th><th>Attend</th><th>Teach</th><th>Learn</th><th>Acc.</th><th>Dem.</th><th>Total</th></tr>
+   ${d.ranking.map(r=>`<tr><td>${r.rank}</td><td>${esc(r.name)}</td><td>${r.playing}</td><td>${r.hosting}</td><td>${r.attending}</td><td>${r.teaching}</td><td>${r.learning}</td><td>${r.acc}</td><td>${r.dem}</td><td><b>${r.total}</b></td></tr>`).join('')}</table></div></div>
+  <div class="card"><h2>Games &amp; tiers</h2><div class="row"><input id="gn" placeholder="Name"><input id="gp" type="number" placeholder="Players" style="width:90px"><select id="gt"><option value="1">1 Gateway</option><option value="2">2 Light</option><option value="3">3 Medium</option><option value="4">4 Heavy</option></select><input id="gd" placeholder="Duration" style="width:110px"><input id="go" placeholder="Owner"><button class="b p" onclick="saveGame()">Save game</button></div>
+   <div class="tbl"><table><tr><th>Game</th><th>Tier</th><th>Players</th><th>Duration</th><th>Owner</th><th></th></tr>${d.games.map((g,i)=>`<tr><td>${esc(g.name)}</td><td>${g.tier}</td><td>${g.players}</td><td>${esc(g.duration)}</td><td>${esc(g.owner)}</td><td><button class="b" onclick="editGame(${i})">Edit</button></td></tr>`).join('')}</table></div></div>
+  <div class="card"><h2>Players</h2><div class="row"><input id="pn" placeholder="New player name"><button class="b p" onclick="post({action:'addPlayer',name:val('pn')})">Add player</button></div></div>
+  <div class="card"><h2>Accolades</h2><div class="row"><input id="at" placeholder="Title">${opts(d.players,'ap')}<input id="apt" type="number" placeholder="Pts" style="width:80px"><button class="b p" onclick="post({action:'addAccolade',title:val('at'),person:val('ap'),points:+val('apt')})">Add</button></div>
+   <div class="tbl"><table>${d.accolades.map(a=>`<tr><td>${esc(a.title)}</td><td>${esc(a.person)}</td><td>+${a.points}</td><td>${del('Accolades',a.id)}</td></tr>`).join('')}</table></div></div>
+  <div class="card"><h2>Demerits</h2><div class="row"><input id="dd" type="date" value="${today()}"><input id="dr" placeholder="Reason">${opts(d.players,'dp')}<input id="dpt" type="number" placeholder="Pts" style="width:80px"><button class="b p" onclick="post({action:'addDemerit',date:val('dd'),reason:val('dr'),person:val('dp'),points:+val('dpt')})">Add</button></div>
+   <div class="tbl"><table>${d.demerits.map(a=>`<tr><td>${esc(a.date)}</td><td>${esc(a.reason)}</td><td>${esc(a.person)}</td><td>−${a.points}</td><td>${del('Demerits',a.id)}</td></tr>`).join('')}</table></div></div>
+  <div class="card"><h2>Sessions &amp; games logged</h2><p class="mu">To correct an entry, delete it and log it again. Deleting a session also deletes its games.</p><div class="tbl"><table>
+   ${d.sessions.slice().reverse().map(s=>`<tr><td><b>${esc(s.date)}</b></td><td>Hosts: ${esc(s.hosts.join(', '))}</td><td>${s.hosts.length+s.attendees.length} people</td><td>${del('Sessions',s.id)}</td></tr>${d.plays.filter(p=>p.session===s.id).map(p=>`<tr><td></td><td>${esc(p.game)}</td><td>${esc(p.places.join(' > '))}</td><td>${del('Plays',p.id)}</td></tr>`).join('')}`).join('')}</table></div></div>
+  <div class="card"><h2>Import seed data</h2><p class="mu">One time only. Replaces players, games, sessions and game entries with the contents of seed.json.</p><input type="file" accept=".json" onchange="seedFile(this)"></div>`}
+function saveGame(){const n=val('gn').trim();if(!n)return flash('Enter a name');
+  post({action:'saveGame',old:S.old||'',game:{name:n,players:+val('gp')||0,tier:+val('gt'),duration:val('gd'),owner:val('go')}});S.old=''}
+function editGame(i){const g=S.d.games[i];S.old=g.name;gn.value=g.name;gp.value=g.players;gt.value=g.tier;gd.value=g.duration;go.value=g.owner;gn.scrollIntoView({block:'center'})}
+function seedFile(el){const f=el.files[0];if(!f||!confirm('Replace existing data with this file?'))return;
+  const r=new FileReader();r.onload=()=>post({action:'seed',data:JSON.parse(r.result)});r.readAsText(f)}
+load();
+</script></body></html>
