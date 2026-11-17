@@ -6,11 +6,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="BGL">
+<link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
-:root{--bg:#f6f6f3;--card:#fff;--bd:#e4e3dd;--tx:#1f2421;--mu:#6b7069;--ac:#2f5d50;--ac2:#e8efec;--er:#b3261e;--er2:#fbeae8}
-@media(prefers-color-scheme:dark){:root{--bg:#161816;--card:#1f221f;--bd:#33372f;--tx:#ecece7;--mu:#9a9f96;--ac:#7fb5a3;--ac2:#243029;--er:#f2b8b5;--er2:#3b1f1d}}
+:root{--bg:#f6f6f3;--card:#fff;--bd:#e4e3dd;--tx:#1f2421;--mu:#6b7069;--ac:#2f5d50;--ac2:#e8efec;--er:#b3261e;--er2:#fbeae8;--wn:#fdf0d5;--wnt:#8a5a00}
+@media(prefers-color-scheme:dark){:root{--bg:#161816;--card:#1f221f;--bd:#33372f;--tx:#ecece7;--mu:#9a9f96;--ac:#7fb5a3;--ac2:#243029;--er:#f2b8b5;--er2:#3b1f1d;--wn:#3a2f17;--wnt:#f0c36d}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%}
 #app{max-width:720px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 14px calc(90px + env(safe-area-inset-bottom))}
@@ -39,7 +40,7 @@ nav button.on{color:var(--ac);font-weight:600}
 .hint{background:var(--ac2);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:14px}
 .tr{display:grid;grid-template-columns:86px 1fr 1fr;gap:8px;align-items:stretch;margin-bottom:8px}
 .tn{display:flex;flex-direction:column;justify-content:center}.tn small{font-size:12px}
-.chip{border:1px dashed var(--bd);border-radius:10px;padding:8px;font-size:13px;color:var(--mu);display:flex;justify-content:space-between;gap:6px;align-items:center;min-height:48px}
+.chip{border:1px solid var(--bd);border-radius:10px;padding:8px;font-size:13px;color:var(--mu);display:flex;justify-content:space-between;gap:6px;align-items:center;min-height:48px}
 .chip.full{border:1px solid var(--ac);background:var(--ac2);color:var(--tx)}.chip b{color:var(--ac)}
 .pill{display:inline-block;background:var(--ac2);color:var(--ac);border-radius:20px;padding:2px 10px;font-size:12px;font-weight:600}
 .pk{display:inline-flex;align-items:center;border:1px solid var(--bd);background:var(--card);border-radius:22px;padding:8px 14px;margin:0 6px 8px 0;font-size:15px}
@@ -70,6 +71,9 @@ details.card summary::-webkit-details-marker{display:none}details.card .in{paddi
 .pl{display:inline-flex;border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-bottom:10px}.pl button{min-height:32px;padding:0 16px;font-size:13px;background:none;border:0}.pl button.on{background:var(--ac2);color:var(--ac);font-weight:600}
 .rt td:first-child,.rt th:first-child{position:sticky;left:0;background:var(--card)}
 ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
+.tn{display:flex;flex-direction:column;justify-content:center;gap:1px;line-height:1.25}.tn small{display:block}
+.chip.part{border-style:dashed}.pill.warn{background:var(--wn);color:var(--wnt)}
+h1{display:flex;align-items:center;gap:8px}details.card summary{gap:10px;align-items:center}details.card summary>span{min-width:0;overflow-wrap:anywhere}
 .load{height:3px;background:var(--ac);margin:-6px 0 10px;animation:ld 1s infinite alternate;border-radius:2px}@keyframes ld{from{width:10%}to{width:90%}}
 #msg{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:9px 16px;border-radius:10px;display:none;max-width:90%;z-index:9}
 @media(min-width:700px){#app{padding-bottom:100px}}
@@ -80,7 +84,10 @@ const S={code:localStorage.getItem('bgl_c')||'',player:localStorage.getItem('bgl
   tab:'progress',view:'qual',rules:false,lb:'top',hv:'date',open:-1,atab:'ranking',sub:'awards',ev:null,edit:null,gt:{},imp:null,late:null,lmode:'game',admin:false,sec:'ranking',d:null,busy:false,s:null,g:null,done:null,q:'',err:''};
 const $=q=>document.querySelector(q),val=id=>$('#'+id).value;
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const today=()=>new Date().toISOString().slice(0,10);
+const VERSION='v6';
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const LOGO=n=>`<img src="icon-192.png" width="${n}" height="${n}" alt="" style="border-radius:22%;flex:none">`;
+const det=(k,def,sum,body)=>`<details class="card" ${(S.gt[k]===undefined?def:S.gt[k])?'open':''} ontoggle="S.gt['${k}']=this.open"><summary>${sum}</summary><div class="in">${body}</div></details>`;
 const ord=i=>['1st','2nd','3rd'][i]||(i+1)+'th';
 const tog=(a,v)=>{const i=a.indexOf(v);i<0?a.push(v):a.splice(i,1)};
 const ICON={progress:'<path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/>',log:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/>',
@@ -96,7 +103,7 @@ const ICON={progress:'<path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/>',log:'<rect 
   lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'};
 const svg=k=>`<svg viewBox="0 0 24 24">${ICON[k]}</svg>`;
 const svgS=(k,n)=>`<svg viewBox="0 0 24 24" style="width:${n}px;height:${n}px;vertical-align:-3px">${ICON[k]}</svg>`;
-function flash(t){const m=$('#msg');m.textContent=t;m.style.display='block';clearTimeout(flash.t);flash.t=setTimeout(()=>m.style.display='none',2800)}
+function flash(t,ms){const m=$('#msg');m.textContent=t;m.style.display='block';clearTimeout(flash.t);flash.t=setTimeout(()=>m.style.display='none',ms||2800)}
 
 /* ---------- data ---------- */
 async function api(action,extra){
@@ -117,7 +124,7 @@ async function act(action,extra){
   flash('Saving…');
   try{const r=await api(action,extra);
     if(r.dup){$('#msg').style.display='none';return r}
-    if(r.error){flash(r.error==='code'?'Access code not accepted':r.error);return null}
+    if(r.error){flash(r.error==='code'?'Access code not accepted':r.error,6000);return null}
     flash('Saved');await load();return r}
   catch(e){flash('Network error');return null}}
 
@@ -133,9 +140,9 @@ function render(){
   if(!S.player){a.innerHTML=hdr()+pickV();return}
   a.innerHTML=hdr()+({progress:progV,log:logV,board:boardV})[S.tab]()+navHtml([['progress','Progress'],['log','Log'],['board','Leaderboard']],S.tab,'goT')}
 function goT(t){S.tab=t;render();scrollTo(0,0)}function goA(t){S.atab=t;S.edit=null;render();scrollTo(0,0)}
-function hdr(){return `<header><h1>🎲 Board Game League</h1><div class="row" style="flex-wrap:nowrap"><button class="ib" onclick="S.rules=!S.rules;S.admin=false;render();scrollTo(0,0)" aria-label="Rules">${svg('help')}</button><button class="ib" onclick="S.admin=!S.admin;S.rules=false;S.edit=null;render()" aria-label="Admin">${svg('lock')}</button></div></header>
+function hdr(){return `<header><h1>${LOGO(30)} Board Game League</h1><div class="row" style="flex-wrap:nowrap"><button class="ib" onclick="S.rules=!S.rules;S.admin=false;render();scrollTo(0,0)" aria-label="Rules">${svg('help')}</button><button class="ib" onclick="S.admin=!S.admin;S.rules=false;S.edit=null;render()" aria-label="Admin">${svg('lock')}</button></div></header>
   ${S.player&&!S.admin&&!S.rules?`<div class="who">Playing as <b>${esc(S.player)}</b> · <button class="link" onclick="S.player='';localStorage.removeItem('bgl_p');render()">change</button></div>`:''}${S.busy?'<div class="load"></div>':''}`}
-function codeV(){return `<div class="card"><h1>🎲 Board Game League</h1><p class="mu">Enter the league access code to continue.</p>${S.err?`<p class="err">${esc(S.err)}</p>`:''}
+function codeV(){return `<div class="card"><h1>${LOGO(30)} Board Game League</h1><p class="mu">Enter the league access code to continue.</p>${S.err?`<p class="err">${esc(S.err)}</p>`:''}
   <div class="row"><input id="cc" class="w" placeholder="Access code" autocomplete="off"><button class="b p w" onclick="S.code=val('cc').trim();localStorage.setItem('bgl_c',S.code);S.err='';load()">Continue</button></div></div>`}
 function plist(){const q=S.q.toLowerCase();return S.d.players.filter(n=>n.toLowerCase().includes(q)).map(n=>`<button class="pk" data-n="${esc(n)}" onclick="setPlayer(this.dataset.n)">${esc(n)}</button>`).join('')||'<span class="mu">No match</span>'}
 function pickV(){return `<div class="card"><h2>Who are you?</h2><input class="w" id="q" placeholder="Search your name" value="${esc(S.q)}" oninput="S.q=this.value;$('#plist').innerHTML=plist()" style="margin-bottom:12px"><div id="plist">${plist()}</div></div>`}
@@ -145,7 +152,7 @@ function setPlayer(n){
   render();load()}
 
 /* ---------- progress ---------- */
-function chip(s){return s.game?`<div class="chip full"><span>${esc(s.game)}</span><b>${s.pts}</b></div>`:'<div class="chip">Not played</div>'}
+function chip(s,max){return s.game?`<div class="chip full ${s.pts<max?'part':''}"><span>${esc(s.game)}</span><b>${s.pts}</b></div>`:'<div class="chip"><span>Not played</span></div>'}
 const mx=t=>S.d.table[0][t];
 function progV(){
   const m=S.d.me;if(!m)return '<div class="card mu">Loading your progress…</div>';
@@ -162,23 +169,24 @@ function progV(){
    ${m.dom?`<p style="margin:12px 0 0"><span class="pill">${svgS('crown',14)} Dominator +5</span></p>`:''}${m.dem?`<p class="mu" style="margin:8px 0 0">Demerits −${m.dem}</p>`:''}</div>
    <div class="hint">${hint}</div>
    <div class="seg">${[['qual','Qualifying'],['games','Games'],['hist','History']].map(x=>`<button class="${S.view===x[0]?'on':''}" onclick="S.view='${x[0]}';render()">${x[1]}</button>`).join('')}</div>`;
-  if(S.view==='qual')h+=[0,1,2,3].map(t=>`<div class="tr"><div class="tn"><b>Tier ${t+1}</b><br><small>up to ${mx(t)}</small></div>${chip(m.slots[t*2])}${chip(m.slots[t*2+1])}</div>`).join('')+
-    `<div class="tr"><div class="tn"><b>Any tier</b><br><small>up to ${mx(3)}</small></div>${chip(m.slots[8])}${chip(m.slots[9])}</div>`;
+  if(S.view==='qual')h+=[0,1,2,3].map(t=>`<div class="tr"><div class="tn"><b>Tier ${t+1}</b><small>up to ${mx(t)}</small></div>${chip(m.slots[t*2],mx(t))}${chip(m.slots[t*2+1],mx(t))}</div>`).join('')+
+    `<div class="tr"><div class="tn"><b>Any tier</b><small>up to ${mx(3)}</small></div>${chip(m.slots[8],mx(3))}${chip(m.slots[9],mx(3))}</div><small class="mu" style="display:block">Dashed outline: below the top score for that tier.</small>`;
   else if(S.view==='games')h+=gamesV(ids);
   else{
     h+=`<div class="pl"><button class="${S.hv==='date'?'on':''}" onclick="S.hv='date';render()">Date</button><button class="${S.hv==='tier'?'on':''}" onclick="S.hv='tier';render()">Tier</button></div>`;
     const row=x=>`<div class="hc"><div><b>${esc(x.game)}</b>${ids[x.id]?' <span class="pill">counts</span>':''}<br><small>${esc(x.date)}${S.hv==='date'?' · Tier '+x.tier:''} · ${ord(x.place-1)} of ${x.of}</small></div><b>+${x.pts}</b></div>`;
     if(S.hv==='date')h+=`<div class="card">${m.history.slice().reverse().map(row).join('')||'<span class="mu">No games yet.</span>'}</div>`;
     else h+=[3,2,1,0].map(t=>{const l=m.history.filter(x=>x.tier===t+1).sort((a,b)=>b.pts-a.pts||b.date.localeCompare(a.date));
-      return `<div class="card"><div class="row sp"><b>Tier ${t+1}</b><small>${l.length} played</small></div>${l.map(row).join('')||'<small>None yet.</small>'}</div>`}).join('')}
+      return det('h'+t,true,`<span><b>Tier ${t+1}</b></span><small>${l.length} played</small>`,l.map(row).join('')||'<small>None yet.</small>')}).join('')}
   return h}
 function gamesV(ids){
   const m=S.d.me,cnt={},cc={};
   m.history.forEach(h=>{cnt[h.game]=(cnt[h.game]||0)+1;if(ids[h.id])cc[h.game]=(cc[h.game]||0)+1});
   return '<p class="mu" style="margin:0 0 10px;font-size:14px">Dots show how many of the 2 scores allowed per game are counting in your top 10.</p>'+[1,2,3,4].map(t=>{
     const names=new Set(S.d.games.filter(g=>g.tier===t).map(g=>g.name));m.history.filter(h=>h.tier===t).forEach(h=>names.add(h.game));
-    const l=[...names].sort((a,b)=>(cnt[b]||0)-(cnt[a]||0)||a.localeCompare(b));
-    return `<div class="card"><div class="row sp"><b>Tier ${t}</b><small>up to ${mx(t-1)}</small></div>${l.map(n=>{const k=cc[n]||0;return `<div class="li ${cnt[n]?'':'mu'}"><span class="nm">${esc(n)}</span><span class="mt"><small>${cnt[n]?'played '+cnt[n]:'not played'}</small><br><span class="dots">${'●'.repeat(k)}${'○'.repeat(2-k)}</span>${k>=2?' <span class="pill">max</span>':''}</span></div>`}).join('')}</div>`}).join('')}
+    const l=[...names].sort((a,b)=>(cnt[b]||0)-(cnt[a]||0)||a.localeCompare(b)),played=l.filter(n=>cnt[n]).length;
+    const body=l.map(n=>{const k=cc[n]||0;return `<div class="li ${cnt[n]?'':'mu'}"><span class="nm">${esc(n)}</span><span class="mt"><small>${cnt[n]?'played '+cnt[n]+(k>=2?' · maxed':''):'not played'}</small><br><span class="dots">${'●'.repeat(k)}${'○'.repeat(2-k)}</span></span></div>`}).join('');
+    return det('g'+t,false,`<span><b>Tier ${t}</b> <small>· up to ${mx(t-1)}</small></span><small>${played} of ${l.length} played</small>`,body)}).join('')}
 function hintG(gm){
   const m=S.d.me;if(!m)return '';const ids={};m.slots.forEach(x=>{if(x.id)ids[x.id]=1});let n=0,k=0;
   m.history.forEach(h=>{if(h.game===gm.name){n++;if(ids[h.id])k++}});
@@ -207,9 +215,10 @@ function rulesV(){
   return `<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.rules=false;render()">← Back</button></div><h2>Rules and scoring</h2>
   ${sec('How points work',`<p>Each game result scores points based on your finishing place and the game's tier. A game needs 3 to 7 players to score, and 4th place and below all score the same.</p>${tbl}<p class="mu">To see which games are in each tier, open Progress › Games.</p>`,1)}
   ${sec('Your top 10 scores',`<p>Your best 2 scores in each tier (8 scores) count, plus your next 2 best from any tier. No more than 2 scores can come from the same game. The most you can earn from playing is ${max} points.</p>`)}
-  ${sec('Bonus points',`<ul><li><b>Hosting</b> (each host earns)<ul><li>1 point for 4-5 people</li><li>2 points for 6-10 people</li><li>3 points for 11 or more</li></ul></li><li><b>Attending</b><ul><li>1 point for each session you attend</li></ul></li><li><b>Teaching</b><ul><li>1 point for a Tier 1-2 game</li><li>2 points for a Tier 3-4 game</li></ul></li><li><b>Learning</b><ul><li>1 point for each new game you learn</li></ul></li></ul><p class="mu">Each category is capped at 10 points. Hosts count towards the number of people.</p>`)}
+  ${sec('Bonus points',`<ul><li><b>Hosting</b> (each host earns)<ul><li>1 point for 4-5 people</li><li>2 points for 6-10 people</li><li>3 points for 11 or more</li></ul></li><li><b>Attending</b><ul><li>1 point for each session you attend</li></ul></li><li><b>Teaching</b><ul><li>1 point for a Tier 1-2 game</li><li>2 points for a Tier 3-4 game</li></ul></li><li><b>Learning</b><ul><li>1 point for each game you learn for the first time (not if you have already played or taught it)</li></ul></li></ul><p class="mu">Each category is capped at 10 points. Hosts count towards the number of people.</p>`)}
   ${sec('Accolades and demerits',`<p>The Dominator (most first-place finishes) earns bonus points and can change hands during the league. Other accolades are awarded at the end of the league. Demerits deduct points.</p>`)}
-  ${sec('Logging games',`<p>A host creates the session and can add late arrivals. Any player in a game logs it. You can undo your own entry for 10 minutes after logging. After that, ask an admin to fix it.</p>`)}`}
+  ${sec('Logging games',`<p>A host creates the session and can add late arrivals. Any player in a game logs it. You can undo your own entry for 10 minutes after logging. After that, ask an admin to fix it.</p>`)}
+  <p class="mu" style="text-align:center;margin-top:16px">Version ${VERSION}</p>`}
 
 /* ---------- log ---------- */
 const people=s=>s?s.hosts.concat(s.attendees):[];
@@ -259,10 +268,11 @@ function sesV(){
   const d=S.d,p=S.player,s=S.s=S.s||{date:today(),hosts:[p],attendees:[]};
   if(!s.hosts.includes(p))s.hosts.unshift(p);
   const n=s.hosts.length+s.attendees.length,bn=n>=11?3:n>=6?2:n>=4?1:0;
-  return `<div class="card"><h2>1 · Session date</h2><input type="date" value="${s.date}" onchange="S.s.date=this.value"></div>
+  return `<div class="card"><h2>1 · Session date</h2><input type="date" max="${today()}" value="${s.date}" onchange="setSD(this.value)"></div>
   <div class="card"><h2>2 · Hosts</h2><small>You plus up to 5 more</small><div style="margin-top:8px">${d.players.map(x=>pk(s.hosts.includes(x),x,'tglH',x===p)).join('')}</div></div>
   <div class="card"><h2>3 · Attendees</h2><small>${n} people · each host earns ${bn} bonus point${bn===1?'':'s'}</small><div style="margin-top:8px">${d.players.filter(x=>!s.hosts.includes(x)).map(x=>pk(s.attendees.includes(x),x,'tglA')).join('')}</div></div>
   <button class="b p w" onclick="saveSession()">Create session</button>`}
+function setSD(v){if(v>today()){flash('Sessions cannot be in the future');v=today()}S.s.date=v;render()}
 function tglH(n){const s=S.s;if(!s.hosts.includes(n)&&s.hosts.length>=6)return flash('Maximum 6 hosts');tog(s.hosts,n);s.attendees=s.attendees.filter(x=>x!==n);render()}
 function tglA(n){tog(S.s.attendees,n);render()}
 function lateV(){
@@ -281,15 +291,20 @@ async function saveSession(){if(await act('addSession',S.s)){S.s=null;S.done='Se
 const ar=(nm,ac,cls)=>`<div class="ar ${cls||''}"><div class="nm">${nm}</div><div class="ac">${ac}</div></div>`;
 const AN=d=>d.allPlayers.map(p=>p.name);
 const del=(t,id)=>`<button class="b s" data-t="${t}" data-id="${esc(id)}" onclick="delE(this.dataset.t,this.dataset.id)">Delete</button>`;
-function delE(t,id){if(confirm('Delete this entry? Deleting a session also deletes its games.'))act('delete',{tab:t,id})}
+function delE(t,id){const m={Sessions:'Delete this session and all its games?',Plays:'Delete this game result?',Accolades:'Remove this accolade?',Demerits:'Remove this demerit?'}[t];if(confirm(m))act('delete',{tab:t,id})}
 const opts=(a,id)=>`<select id="${id}">${a.map(x=>`<option>${esc(x)}</option>`).join('')}</select>`;
 const MAN_END=[['8th Wonder',8]],MAN_SEC=[['Saltiest player',4],["Wolf in sheep's clothing",5],['Luckiest player',7],['Negotiator',5],['Most Fun',5],['Strategist',5]],MAN=MAN_END.concat(MAN_SEC);
 function adminV(){
   const d=S.d;
   if(!d.admin)return `<div class="card"><h2>Admin access</h2>${S.passErr?'<p class="err">Passcode not accepted.</p>':''}<div class="row"><input id="pw" type="password" placeholder="Admin passcode" class="w"><button class="b p w" onclick="S.pass=val('pw');S.passErr=false;sessionStorage.setItem('bgl_a',S.pass);load()">Unlock</button></div><p class="mu">Tap the lock icon again to return to the app.</p></div>`;
   return ({ranking:aRank,entries:aEntries,settings:aSettings})[S.atab]()}
-function aRank(){return `<div class="card"><h2>Full ranking</h2><p class="mu">Total is what players see${S.d.revEnd&&S.d.revSecret?'':' (unrevealed accolades excluded)'}. Projected includes all accolades.</p><div class="tbl"><table class="rt"><tr><th>Player</th><th>Play</th><th>Host</th><th>Att</th><th>Teach</th><th>Learn</th><th>Dem</th><th>Dom</th><th>Hidden</th><th>Total</th><th>Proj (#)</th></tr>
-  ${S.d.ranking.map(r=>`<tr><td>${r.rank}. ${esc(r.name)}${r.retired?' <small>(retired)</small>':''}</td><td>${r.playing}</td><td>${r.hosting}</td><td>${r.attending}</td><td>${r.teaching}</td><td>${r.learning}</td><td>${r.dem}</td><td>${r.dom}</td><td>${r.hidden}</td><td><b>${r.total}</b></td><td>${r.proj} (#${r.projRank})</td></tr>`).join('')}</table></div></div>`}
+function aRank(){
+  const bx=S.bx;
+  return `<div class="card"><h2>Full ranking</h2><p class="mu">Total is what players see${S.d.revEnd&&S.d.revSecret?'':' (unrevealed accolades excluded)'}. Projected includes all accolades.</p>
+  <button class="b s" onclick="S.bx=!S.bx;render()">${bx?'Hide':'Show'} bonus breakdown</button><div class="tbl" style="margin-top:8px"><table class="rt">
+  ${bx?'<tr><th></th><th></th><th></th><th></th><th colspan="4" style="text-align:center;border-bottom:1px solid var(--bd)">Bonus points</th><th></th><th></th><th></th></tr>':''}
+  <tr><th>Player</th><th>Total</th><th>Proj (#)</th><th>Play</th>${bx?'<th>Host</th><th>Att</th><th>Teach</th><th>Learn</th>':'<th>Bonus</th>'}<th>Dem</th><th>Dom</th><th>Hidden</th></tr>
+  ${S.d.ranking.map(r=>`<tr><td>${r.rank}. ${esc(r.name)}${r.retired?' <small>(retired)</small>':''}</td><td><b>${r.total}</b></td><td>${r.proj} (#${r.projRank})</td><td>${r.playing}</td>${bx?`<td>${r.hosting}</td><td>${r.attending}</td><td>${r.teaching}</td><td>${r.learning}</td>`:`<td>${r.hosting+r.attending+r.teaching+r.learning}</td>`}<td>${r.dem}</td><td>${r.dom}</td><td>${r.hidden}</td></tr>`).join('')}</table></div></div>`}
 function aSettings(){
   const subs=[['awards','Awards'],['games','Games'],['players','Players'],['data','Data']];
   return `<div class="seg">${subs.map(x=>`<button class="${S.sub===x[0]?'on':''}" onclick="S.sub='${x[0]}';render()">${x[1]}</button>`).join('')}</div>`+({awards:aAwards,games:aGames,players:aPlayers,data:aData})[S.sub]()}
@@ -307,35 +322,35 @@ function editGame(i){const g=S.d.allGames[i];S.old=g.name;$('#gn').value=g.name;
 function aPlayers(){
   const ps=S.d.allPlayers,on=ps.filter(p=>!p.retired),off=ps.filter(p=>p.retired);
   const row=p=>ar(esc(p.name),`<button class="b s" data-n="${esc(p.name)}" onclick="act('retirePlayer',{name:this.dataset.n,retired:${!p.retired}})">${p.retired?'Restore':'Retire'}</button>`);
-  return `<div class="card"><h2>Add a player</h2><div class="row"><input id="pn" placeholder="Full name" class="w"><button class="b p" onclick="act('addPlayer',{name:val('pn').trim()})">Add player</button></div></div>
-  <div class="card"><div class="row sp"><b>Active</b><small>${on.length}</small></div>${on.map(row).join('')}</div>
-  ${off.length?`<details class="card" ${S.gt.rp?'open':''} ontoggle="S.gt.rp=this.open"><summary><span>Retired</span><small>${off.length}</small></summary><div class="in"><small>Hidden from pickers; results and ranking are kept.</small>${off.map(row).join('')}</div></details>`:''}`}
+  return `<div class="card"><h2>Add a player</h2><div class="row"><input id="pn" placeholder="Full name" class="w"><button class="b p" onclick="act('addPlayer',{name:val('pn').trim()})">Add player</button></div></div>`+
+   det('pa',false,`<span>Active</span><small>${on.length}</small>`,on.map(row).join(''))+
+   (off.length?det('rp',false,`<span>Retired</span><small>${off.length}</small>`,'<small>Hidden from pickers; results and ranking are kept.</small>'+off.map(row).join('')):'')}
 
 /* awards */
 function revCard(w,title,desc,on){
-  return `<div class="card"><div class="row sp"><h2 style="margin:0">${title}</h2><span class="pill">${on?'Revealed':'Hidden'}</span></div><p class="mu">${desc}</p>${on
+  const body=`<p class="mu" style="margin-top:0">${desc}</p>`+(on
    ?`<button class="b w" onclick="if(confirm('Hide these accolades from players again?'))act('setReveal',{which:'${w}',on:false})">Hide again</button>`
-   :`<input id="rv-${w}" class="w" placeholder="Type REVEAL to enable" autocomplete="off" oninput="$('#rb-${w}').disabled=this.value.trim().toUpperCase()!=='REVEAL'" style="margin-bottom:8px"><button id="rb-${w}" class="b danger w" disabled onclick="act('setReveal',{which:'${w}',on:true})">Reveal to players</button>`}</div>`}
+   :`<button class="b danger w" onclick="if(confirm('Reveal these accolades to all players now? They will see winners and points straight away and cannot unsee them.'))act('setReveal',{which:'${w}',on:true})">Reveal to players</button>`);
+  return det('r'+w,false,`<span><b>${title}</b></span><span class="pill ${on?'':'warn'}">${on?'Revealed':'Hidden'}</span>`,body)}
 function aAwards(){
-  const d=S.d;
-  const auto=Object.keys(d.auto).map(k=>{const a=d.auto[k];return `<div class="card tile" style="margin:0"><small>${k}</small><h2 style="margin:4px 0">${esc(a.names.join(', ')||'None yet')}</h2><small>${a.count} · +${a.points}</small><div style="margin-top:8px"><span class="pill">${k==='Dominator'?'Public':d.revEnd?'Revealed':'Hidden'}</span></div></div>`}).join('');
+  const d=S.d,AL={'Dominator':'first-place finishes','Biggest Loser':'last-place finishes','The Enthusiast':'new games'};
+  const auto=`<div class="top">${Object.keys(d.auto).map(k=>{const a=d.auto[k],vis=k==='Dominator'||d.revEnd;return `<div class="card tile" style="margin:0"><small>${k}</small><h2 style="margin:4px 0">${esc(a.names.join(', ')||'None yet')}</h2><small>${a.count} ${AL[k]} · +${a.points} points</small><div style="margin-top:8px"><span class="pill ${vis?'':'warn'}">${k==='Dominator'?'Public':d.revEnd?'Revealed':'Hidden'}</span></div></div>`}).join('')}</div><small style="display:block;margin-top:10px">Calculated live from results. Ties after the higher-tier tie-break share the points.</small>`;
   const titles=MAN.map(x=>x[0]),all=titles.concat([...new Set(d.accolades.map(a=>a.title))].filter(t=>!titles.includes(t)));
   const groups=all.map(t=>({t:t,l:d.accolades.filter(a=>a.title===t)})).filter(g=>g.l.length);
   const og=(l,lab)=>`<optgroup label="${lab}">${l.map(x=>`<option data-p="${x[1]}">${esc(x[0])}</option>`).join('')}</optgroup>`;
-  return `<div class="card"><h2>Automatic</h2><div class="top">${auto}</div><small style="display:block;margin-top:10px">Calculated live from results. Ties after the higher-tier tie-break share the points.</small></div>
-  <div class="card"><h2>Voted and manual</h2><div class="row"><select id="ak" class="w" onchange="$('#apt').value=this.selectedOptions[0].dataset.p">${og(MAN_END,'End of league')}${og(MAN_SEC,'Secret (voted)')}</select>${opts(AN(d),'ap')}<input id="apt" type="number" value="${MAN[0][1]}" style="width:80px"><button class="b p" onclick="act('addAccolade',{title:val('ak'),person:val('ap'),points:+val('apt')})">Add</button></div>
-   ${groups.map(g=>`<div style="margin-top:12px"><b>${esc(g.t)}</b> <small>${MAN_END.some(x=>x[0]===g.t)?'· end of league':'· secret'}</small>${g.l.map(a=>ar(`${esc(a.person)} <small>· +${a.points}</small>`,del('Accolades',a.id))).join('')}</div>`).join('')}</div>
-  <details class="card" ${S.gt.dem?'open':''} ontoggle="S.gt.dem=this.open"><summary><span>Demerits</span><small>${d.demerits.length}</small></summary><div class="in"><small>Applied to totals immediately.</small>
-   <div class="row" style="margin:8px 0"><input id="dd" type="date" value="${today()}"><input id="dr" placeholder="Reason" class="w">${opts(AN(d),'dp')}<input id="dpt" type="number" placeholder="Pts" style="width:80px"><button class="b p" onclick="act('addDemerit',{date:val('dd'),reason:val('dr'),person:val('dp'),points:+val('dpt')})">Add</button></div>
-   ${d.demerits.map(a=>ar(`${esc(a.person)} · −${a.points} <small>· ${esc(a.date)} · ${esc(a.reason)}</small>`,del('Demerits',a.id))).join('')}</div></details>
-  ${revCard('end','Reveal end-of-league accolades','Shows winners and points for Biggest Loser, The Enthusiast and 8th Wonder, and counts them in players\u2019 totals.',d.revEnd)}
-  ${revCard('secret','Reveal secret accolades','Shows the voted accolades and counts their points in players\u2019 totals. Until then, players cannot see that they exist.',d.revSecret)}`}
+  const man=`<div class="row"><select id="ak" class="w" onchange="$('#apt').value=this.selectedOptions[0].dataset.p">${og(MAN_END,'End of league')}${og(MAN_SEC,'Secret (voted)')}</select>${opts(AN(d),'ap')}<input id="apt" type="number" value="${MAN[0][1]}" style="width:80px"><button class="b p" onclick="act('addAccolade',{title:val('ak'),person:val('ap'),points:+val('apt')})">Add</button></div>
+   ${groups.map(g=>`<div style="margin-top:12px"><b>${esc(g.t)}</b> <small>${d.auto[g.t]?'· ignored (calculated automatically, safe to delete)':MAN_END.some(x=>x[0]===g.t)?'· end of league':'· secret'}</small>${g.l.map(a=>ar(`${esc(a.person)} <small>· +${a.points}</small>`,del('Accolades',a.id))).join('')}</div>`).join('')}`;
+  const dem=`<small>Applied to totals immediately.</small><div class="row" style="margin:8px 0"><input id="dd" type="date" value="${today()}"><input id="dr" placeholder="Reason" class="w">${opts(AN(d),'dp')}<input id="dpt" type="number" placeholder="Pts" style="width:80px"><button class="b p" onclick="act('addDemerit',{date:val('dd'),reason:val('dr'),person:val('dp'),points:+val('dpt')})">Add</button></div>
+   ${d.demerits.map(a=>ar(`${esc(a.person)} · −${a.points} <small>· ${esc(a.date)} · ${esc(a.reason)}</small>`,del('Demerits',a.id))).join('')}`;
+  return det('a1',true,'<span><b>Automatic</b></span>',auto)+det('a2',false,`<span><b>Voted and manual</b></span><small>${d.accolades.length}</small>`,man)+det('a3',false,`<span><b>Demerits</b></span><small>${d.demerits.length}</small>`,dem)+
+   revCard('end','Reveal end-of-league accolades','Shows winners and points for Biggest Loser, The Enthusiast and 8th Wonder, and counts them in players\u2019 totals.',d.revEnd)+
+   revCard('secret','Reveal secret accolades','Shows the voted accolades and counts their points in players\u2019 totals. Until then, players cannot see that they exist.',d.revSecret)}
 
 /* data */
 function aData(){return `<div class="card"><h2>Backup</h2><p class="mu">Download everything (players, games, sessions, results, accolades, demerits) as a file you can re-import later.</p><button class="b p w" onclick="exportData()">Export backup</button></div>
   <div class="card"><h2>Import data</h2><p class="mu">Replaces <b>all</b> existing data with a backup file. Export a backup first.</p><button class="b p w" onclick="$('#imp').click()">Choose backup file</button><input id="imp" type="file" accept=".json" hidden onchange="pickImp(this)">
    ${S.imp?`<p style="margin:12px 0 8px">Selected: <b>${esc(S.imp.name)}</b></p><div class="row"><button class="b danger" onclick="doImp()">Replace all data</button><button class="b" onclick="S.imp=null;render()">Cancel</button></div>`:''}</div>
-  <div class="card"><h2>Admin session</h2><button class="b w" onclick="S.pass='';sessionStorage.removeItem('bgl_a');S.admin=false;load()">Lock admin</button></div>`}
+  <div class="card"><h2>Admin session</h2><p class="mu">App version ${VERSION}</p><button class="b w" onclick="S.pass='';sessionStorage.removeItem('bgl_a');S.admin=false;load()">Lock admin</button></div>`}
 async function exportData(){try{const r=await api('export');if(r.error)return flash(r.error);const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(r,null,1)],{type:'application/json'}));a.download='bgl-backup-'+today()+'.json';a.click()}catch(e){flash('Export failed')}}
 function pickImp(el){const f=el.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{S.imp={name:f.name,text:r.result};render()};r.readAsText(f)}
 async function doImp(){if(!confirm('Replace ALL existing data with this file? This cannot be undone.'))return;
@@ -350,13 +365,16 @@ function aEntries(){
   const eb=(k,id)=>`<button class="b s" data-id="${esc(id)}" onclick="${k}(this.dataset.id)">Edit</button>`;
   let h=`<div class="seg"><button class="${mode==='review'?'on':''}" onclick="S.ev='review';render()">Needs review (${n})</button><button class="${mode==='all'?'on':''}" onclick="S.ev='all';render()">All entries</button></div>`;
   if(mode==='review')return h+(n?d.plays.filter(p=>fl[p.id]).map(p=>`<div class="card bad"><b>${esc(p.game)}</b> <small>· ${esc(ses(p.session).date)}</small><p style="margin:4px 0">${esc(fl[p.id])}</p><small>${esc(p.places.join(' > '))}</small><div style="margin-top:10px;display:flex;gap:6px">${eb('editPlay',p.id)}${del('Plays',p.id)}</div></div>`).join(''):'<div class="card ok">Nothing needs review.</div>');
-  return h+d.allSessions.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(s=>`<div class="card">${ar(`<b>${esc(s.date)}</b><br><small>Hosts: ${esc(s.hosts.join(', '))} · ${s.hosts.length+s.attendees.length} people</small>`,eb('editSes',s.id)+del('Sessions',s.id))}
-   ${d.plays.filter(p=>p.session===s.id).map(p=>ar(`<b>${esc(p.game)}</b><br><small>${esc(p.places.join(' > '))}</small>${fl[p.id]?'<br><small>'+esc(fl[p.id])+'</small>':''}`,eb('editPlay',p.id)+del('Plays',p.id),fl[p.id]?'bad':'')).join('')}</div>`).join('')}
+  return h+d.allSessions.slice().sort((a,b)=>b.date.localeCompare(a.date)).map((s,i)=>{
+    const pl=d.plays.filter(p=>p.session===s.id),nf=pl.filter(p=>fl[p.id]).length;
+    return det('s'+s.id,i===0,`<span><b>${esc(s.date)}</b> <small>· ${esc(s.hosts.join(', '))}</small></span><small>${pl.length} game${pl.length===1?'':'s'}${nf?` · <span class="err">${nf} to review</span>`:''}</small>`,
+     ar(`<small>${s.hosts.length+s.attendees.length} people</small>`,eb('editSes',s.id)+del('Sessions',s.id))+
+     pl.map(p=>ar(`<b>${esc(p.game)}</b><br><small>${esc(p.places.join(' > '))}</small>${fl[p.id]?'<br><small>'+esc(fl[p.id])+'</small>':''}`,eb('editPlay',p.id)+del('Plays',p.id),fl[p.id]?'bad':'')).join(''))}).join('')}
 function editSes(id){const s=S.d.allSessions.find(x=>x.id===id);S.edit={kind:'ses',id:id,date:s.date,hosts:s.hosts.slice(),attendees:s.attendees.slice()};render();scrollTo(0,0)}
 function editPlay(id){const p=S.d.plays.find(x=>x.id===id);S.edit={kind:'play',id:id,session:p.session,game:p.game,rank:p.places.slice(),teachers:p.teachers.slice(),learners:p.learners.slice()};render();scrollTo(0,0)}
 function editV(){
   const d=S.d,e=S.edit,btn=`<div class="row"><button class="b p" onclick="saveEdit()">Save changes</button><button class="b" onclick="S.edit=null;render()">Cancel</button></div>`;
-  if(e.kind==='ses')return `<div class="card"><h2>Edit session</h2><input type="date" value="${esc(e.date)}" onchange="S.edit.date=this.value"></div>
+  if(e.kind==='ses')return `<div class="card"><h2>Edit session</h2><input type="date" max="${today()}" value="${esc(e.date)}" onchange="setED(this.value)"></div>
    <div class="card"><h2>Hosts</h2><small>Up to 6</small><div style="margin-top:8px">${AN(d).map(x=>pk(e.hosts.includes(x),x,'eH')).join('')}</div></div>
    <div class="card"><h2>Attendees</h2><small>Anyone in a logged game must stay in the session</small><div style="margin-top:8px">${AN(d).filter(x=>!e.hosts.includes(x)).map(x=>pk(e.attendees.includes(x),x,'eA')).join('')}</div></div>`+btn;
   const ss=d.allSessions.find(x=>x.id===e.session),ppl=people(ss),gm=d.allGames.find(x=>x.name===e.game),left=ppl.filter(n=>!e.rank.includes(n));
@@ -366,6 +384,7 @@ function editV(){
     <div style="margin-top:10px">${left.map(n=>pk(0,n,'eTap')).join('')||'<small>Everyone is ranked.</small>'}</div></div>
    <div class="card"><h2>Teaching</h2><div>${ppl.map(n=>pk(e.teachers.includes(n),n,'eT')).join('')}</div></div>
    ${e.rank.length?`<div class="card"><h2>Learning</h2><div>${e.rank.map(n=>pk(e.learners.includes(n),n,'eL')).join('')}</div></div>`:''}`+btn}
+function setED(v){if(v>today()){flash('Dates cannot be in the future');v=today()}S.edit.date=v;render()}
 function eH(n){const e=S.edit;if(!e.hosts.includes(n)&&e.hosts.length>=6)return flash('Maximum 6 hosts');tog(e.hosts,n);e.attendees=e.attendees.filter(x=>x!==n);render()}
 function eA(n){tog(S.edit.attendees,n);render()}
 function eTap(n){S.edit.rank.push(n);render()}
