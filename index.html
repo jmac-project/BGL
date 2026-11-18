@@ -85,6 +85,7 @@ details.card.rv{border:2px solid var(--er);background:var(--er2)}
 .pds{width:100%;background:var(--card);border:1px solid var(--bd);border-radius:10px 10px 0 0;display:flex;flex-direction:column;align-items:center;padding-top:8px;gap:2px}
 .pds.g1{border:2px solid #b8962e}.pds .big{font-size:22px}.pds.g1 .big{font-size:26px}
 .hrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.hrow .pl{margin:0}
+.hc.nc{color:var(--mu)}.chip .sc{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;flex:none}.chip .sc small{font-size:11px;color:var(--mu)}
 .tg{color:var(--ac);font-size:18px;line-height:1;margin-left:2px}
 </style></head><body><div id="app">Loading…</div><div id="msg"></div>
 <script>
@@ -93,11 +94,13 @@ const S={code:localStorage.getItem('bgl_c')||'',player:localStorage.getItem('bgl
   tab:'progress',view:'qual',rules:false,lb:'top',hv:'tier',hs:'12',ds:'new',ret:false,open:-1,atab:'ranking',sub:'awards',ev:null,edit:null,gt:{},imp:null,late:null,lmode:'game',admin:false,sec:'ranking',d:null,busy:false,s:null,g:null,done:null,q:'',err:''};
 const $=q=>document.querySelector(q),val=id=>$('#'+id).value;
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const VERSION='v7';
+const VERSION='v8';
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const LOGO=n=>`<img src="icon-192.png" width="${n}" height="${n}" alt="" style="border-radius:22%;flex:none">`;
 const pp=n=>n+(n===1?' person':' people');
 const det=(k,def,sum,body,cls)=>`<details class="card ${cls||''}" ${(S.gt[k]===undefined?def:S.gt[k])?'open':''} ontoggle="S.gt['${k}']=this.open"><summary>${sum}</summary><div class="in">${body}</div></details>`;
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],md=d=>MON[+d.slice(5,7)-1]+' '+(+d.slice(8,10)),fd=d=>md(d)+', '+d.slice(0,4),sp=s=>(s&&s.pts)||0;
+const sopt=(l,sel)=>{const by={};l.forEach(x=>(by[x.date.slice(0,4)]=by[x.date.slice(0,4)]||[]).push(x));return Object.keys(by).sort().reverse().map(y=>`<optgroup label="${y}">${by[y].map(x=>`<option value="${esc(x.id)}" ${x.id===sel?'selected':''}>${md(x.date)} · ${esc(x.hosts.join(', '))}</option>`).join('')}</optgroup>`).join('')};
 const ord=i=>['1st','2nd','3rd'][i]||(i+1)+'th';
 const tog=(a,v)=>{const i=a.indexOf(v);i<0?a.push(v):a.splice(i,1)};
 const ICON={progress:'<path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/>',log:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/>',
@@ -110,7 +113,13 @@ const ICON={progress:'<path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/>',log:'<rect 
   temple:'<path d="M3 9l9-5 9 5M5 9v9M9 9v9M15 9v9M19 9v9M3 20h18"/>',
   spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>',
   medal:'<circle cx="12" cy="9" r="5"/><path d="M8.5 13.5L7 21l5-3 5 3-1.5-7.5"/>',
-  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'};
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  salt:'<path d="M8.5 9V6a3.5 3.5 0 0 1 7 0v3M8 9h8l1 11a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1zM11 6h.01M13 6h.01M12 7.8h.01"/>',
+  shoe:'<path d="M5 3h4v9a3 3 0 0 0 6 0V3h4v9a7 7 0 0 1-14 0zM5 7h4M15 7h4"/>',
+  mask:'<path d="M4 5c4 1 12 1 16 0v7a8 8 0 0 1-16 0zM7.5 10c.7-.8 1.8-.8 2.5 0M14 10c.7-.8 1.8-.8 2.5 0M8.5 14.5c1.8 2 5.2 2 7 0"/>',
+  scale:'<path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3.5 3.5 0 0 0 6 0zM19 7l-3 7a3.5 3.5 0 0 0 6 0z"/>',
+  smile:'<circle cx="12" cy="12" r="9"/><path d="M8.5 14c1 1.5 2.2 2.2 3.5 2.2s2.5-.7 3.5-2.2M9 9.5h.01M15 9.5h.01"/>',
+  rook:'<path d="M7 12V5h2v2h2V5h2v2h2V5h2v7zM8.5 12L8 20M15.5 12l.5 8M6 20h12"/>'};
 const svg=k=>`<svg viewBox="0 0 24 24">${ICON[k]}</svg>`;
 const svgS=(k,n)=>`<svg viewBox="0 0 24 24" style="width:${n}px;height:${n}px;vertical-align:-3px">${ICON[k]}</svg>`;
 function flash(t,ms){const m=$('#msg');m.textContent=t;m.style.display='block';clearTimeout(flash.t);flash.t=setTimeout(()=>m.style.display='none',ms||2800)}
@@ -127,7 +136,7 @@ async function load(){
     else if(r.error){S.err=r.error}
     else{S.err='';S.d=r;r._t=Date.now();
       if(!r.admin&&S.player)localStorage.setItem('bgl_cache_'+S.player,JSON.stringify(r));
-      if(S.pass&&!r.admin){S.pass='';sessionStorage.removeItem('bgl_a');S.passErr=true}}}
+      if(S.pass&&!r.admin){S.pass='';sessionStorage.removeItem('bgl_a');S.passErr=r.locked?2:1}}}
   catch(e){S.err='Could not reach the server. Check your connection and the API_URL.'}
   S.busy=false;render()}
 async function act(action,extra){
@@ -162,7 +171,7 @@ function setPlayer(n){
   render();load()}
 
 /* ---------- progress ---------- */
-function chip(s,max){return s.game?`<div class="chip full ${s.pts<max?'part':''}"><span>${esc(s.game)}</span><b>${s.pts}</b></div>`:'<div class="chip"><span>Not played</span></div>'}
+function chip(s,max){if(!s.game)return '<div class="chip"><span>Not played</span></div>';const x=S.d.me.history.find(q=>q.id===s.id);return `<div class="chip full ${s.pts<max?'part':''}"><span>${esc(s.game)}</span><span class="sc"><b>${s.pts}</b>${x?'<small>'+ord(x.place-1)+'</small>':''}</span></div>`}
 const mx=t=>S.d.table[0][t];
 function progV(){
   const m=S.d.me;if(!m)return '<div class="card mu">Loading your progress…</div>';
@@ -177,19 +186,20 @@ function progV(){
    ${gap>0?`<p class="mu" style="margin:10px 0 0;text-align:center">${gap} point${gap>1?'s':''} behind 3rd place</p>`:''}
    <div class="bars">${bon.map(b=>`<div><div class="row sp" style="margin:0"><span>${b[0]}</span><span>${b[1]}/10</span></div><div class="bar"><i style="width:${b[1]*10}%"></i></div></div>`).join('')}</div>
    ${m.dom?`<p style="margin:12px 0 0"><span class="pill">${svgS('crown',14)} Dominator +5</span></p>`:''}${m.dem?`<p class="mu" style="margin:8px 0 0">Demerits −${m.dem}</p>`:''}</div>
-   <div class="hint">${hint}</div>
+   ${filled===10?'':`<div class="hint">${hint}</div>`}
    <div class="seg">${[['qual','Qualifying'],['games','Games'],['hist','History']].map(x=>`<button class="${S.view===x[0]?'on':''}" onclick="S.view='${x[0]}';render()">${x[1]}</button>`).join('')}</div>`;
-  if(S.view==='qual')h+=[0,1,2,3].map(t=>`<div class="tr"><div class="tn" role="button" onclick="jumpG(${t+1})"><b>Tier ${t+1} <span class="tg">›</span></b><small>up to ${mx(t)}</small></div>${chip(m.slots[t*2],mx(t))}${chip(m.slots[t*2+1],mx(t))}</div>`).join('')+
-    `<div class="tr"><div class="tn"><b>Any tier</b><small>up to ${mx(3)}</small></div>${chip(m.slots[8],mx(3))}${chip(m.slots[9],mx(3))}</div>`;
+  if(S.view==='qual')h+=[0,1,2,3].map(t=>`<div class="tr"><div class="tn" role="button" onclick="jumpG(${t+1})"><b>Tier ${t+1} <span class="tg">›</span></b><small>${sp(m.slots[t*2])+sp(m.slots[t*2+1])}/${2*mx(t)}</small></div>${chip(m.slots[t*2],mx(t))}${chip(m.slots[t*2+1],mx(t))}</div>`).join('')+
+    `<div class="tr"><div class="tn"><b>Any tier</b><small>${sp(m.slots[8])+sp(m.slots[9])}/${2*mx(3)}</small></div>${chip(m.slots[8],mx(3))}${chip(m.slots[9],mx(3))}</div>`;
   else if(S.view==='games')h+=gamesV(ids);
   else{
+    const YR=new Set(m.history.map(x=>x.date.slice(0,4))),dl=d=>YR.size>1?fd(d):md(d);
     const tierV=S.hv==='tier',srt=tierV?S.hs:S.ds,lab=tierV?(srt==='12'?'Tier 1→4':'Tier 4→1'):(srt==='new'?'Latest':'Earliest');
     h+=`<div class="hrow"><div class="pl"><button class="${tierV?'on':''}" onclick="S.hv='tier';render()">Tier</button><button class="${tierV?'':'on'}" onclick="S.hv='date';render()">Date</button></div><button class="b s" onclick="${tierV?"S.hs=S.hs==='12'?'21':'12'":"S.ds=S.ds==='new'?'old':'new'"};render()" aria-label="Change sort order">⇅ ${lab}</button></div>`;
-    const row=(x,sd)=>`<div class="hc"><div><b>${esc(x.game)}</b>${ids[x.id]?' <span class="pill">counts</span>':''}<br><small>${sd?'':esc(x.date)+' · '}${sd?'Tier '+x.tier+' · ':''}${ord(x.place-1)} of ${x.of}</small></div><b>+${x.pts}</b></div>`;
+    const row=(x,sd)=>`<div class="hc ${ids[x.id]?'':'nc'}"><div><b>${esc(x.game)}</b>${ids[x.id]?' <span class="pill">counts</span>':''}<br><small>${sd?'':dl(x.date)+' · '}${sd?'Tier '+x.tier+' · ':''}${ord(x.place-1)} of ${x.of}</small></div><b>+${x.pts}</b></div>`;
     if(!tierV){const by={};m.history.forEach(x=>(by[x.date]=by[x.date]||[]).push(x));
       const ds=Object.keys(by).sort();if(srt==='new')ds.reverse();
-      h+=ds.map(dt=>{const l=by[dt],se=(S.d.sessions||[]).find(s=>s.date===dt),pts=l.reduce((a,x)=>a+x.pts,0);
-        return det('d'+dt,true,`<span><b>${esc(dt)}</b><br><small>${se?pp(se.hosts.length+se.attendees.length)+' · ':''}${l.length} game${l.length===1?'':'s'} · +${pts} pts</small></span>`,l.map(x=>row(x,1)).join(''))}).join('')||'<div class="card mu">No games yet.</div>'}
+      let ly='';h+=ds.map(dt=>{const yh=dt.slice(0,4)!==ly?`<h2 class="sec" style="margin:14px 0 8px">${ly=dt.slice(0,4)}</h2>`:'';const l=by[dt],se=(S.d.sessions||[]).find(s=>s.date===dt),pts=l.filter(x=>ids[x.id]).reduce((a,x)=>a+x.pts,0);
+        return yh+det('d'+dt,true,`<span><b>${md(dt)}</b><br><small>${se?pp(se.hosts.length+se.attendees.length)+' · ':''}${l.length} game${l.length===1?'':'s'} · +${pts} counting</small></span>`,l.map(x=>row(x,1)).join(''))}).join('')||'<div class="card mu">No games yet.</div>'}
     else h+=(srt==='12'?[0,1,2,3]:[3,2,1,0]).map(t=>{const l=m.history.filter(x=>x.tier===t+1).sort((a,b)=>b.pts-a.pts||b.date.localeCompare(a.date));
       return det('h'+t,true,`<span><b>Tier ${t+1}</b></span><small>${l.length} played</small>`,l.map(x=>row(x,0)).join('')||'<small>None yet.</small>')}).join('')}
   return h}
@@ -201,29 +211,30 @@ function gamesV(ids){
   return '<p class="mu" style="margin:0 0 10px;font-size:14px">Filled dots are scores counting in your top 10 (max 2 per game).</p>'+[1,2,3,4].map(t=>{
     const names=new Set(S.d.games.filter(g=>g.tier===t).map(g=>g.name));m.history.filter(h=>h.tier===t).forEach(h=>names.add(h.game));
     const l=[...names].sort((a,b)=>(cnt[b]||0)-(cnt[a]||0)||a.localeCompare(b)),played=l.filter(n=>cnt[n]).length;
-    const body=l.map(n=>{const k=cc[n]||0;return `<div class="li ${cnt[n]?'':'mu'}"><span class="nm">${esc(n)}</span><span class="mt"><small>${cnt[n]?'played '+cnt[n]:'not played'}</small> <span class="dots">${'●'.repeat(k)}${'○'.repeat(2-k)}</span></span></div>`}).join('');
-    return det('g'+t,false,`<span><b>Tier ${t}</b> <small>· up to ${mx(t-1)}</small></span><small>${played} of ${l.length} played</small>`,body)}).join('')}
+    const body=l.map(n=>{const k=cc[n]||0;return `<div class="li ${cnt[n]?'':'mu'}"><span class="nm">${esc(n)}</span><span class="mt"><small>${cnt[n]?'played '+cnt[n]:'not played'}</small> <span class="dots" role="img" aria-label="${k} of 2 counting">${'●'.repeat(k)}${'○'.repeat(2-k)}</span></span></div>`}).join('');
+    return det('g'+t,false,`<span><b>Tier ${t}</b> <small>· ${sp(m.slots[t*2-2])+sp(m.slots[t*2-1])}/${2*mx(t-1)}</small></span><small>${played} of ${l.length} played</small>`,body)}).join('')}
 function hintG(gm){
   const m=S.d.me;if(!m)return '';const ids={};m.slots.forEach(x=>{if(x.id)ids[x.id]=1});let n=0,k=0;
   m.history.forEach(h=>{if(h.game===gm.name){n++;if(ids[h.id])k++}});
   return `<small style="display:block;margin-top:8px">${n?`You've played this ${n} time${n>1?'s':''} · ${k} of 2 counting`:'You haven\'t played this one yet.'}</small>`}
 
 /* ---------- leaderboard ---------- */
-const AI={'Dominator':'crown','Biggest Loser':'thumb','8th Wonder':'temple','The Enthusiast':'spark'};
+const AI={'Dominator':'crown','Biggest Loser':'thumb','8th Wonder':'temple','The Enthusiast':'spark','Saltiest player':'salt','Luckiest player':'shoe',"Wolf in sheep's clothing":'mask','Negotiator':'scale','Most Fun':'smile','Strategist':'rook'};
 function tile(t,later){
   const w=t.winners;
   return `<div class="card tile" style="margin:0"><div style="color:var(--ac)">${svgS(AI[t.title]||'medal',34)}</div><h2 style="margin:6px 0 2px">${esc(t.title)}</h2><small>${esc(t.desc)}</small>
    ${w&&w.length?`<div style="margin-top:10px"><b>${esc(w.join(', '))}</b></div>${t.count?`<small>${t.count} first-place finishes</small><br>`:''}<span class="pill">+${t.points} points</span>`
     :later?`<div style="margin-top:10px"><span class="pill">+${t.points} points</span></div><div style="margin-top:6px"><small>${w?'No winner yet':'Winner revealed at the end of the league'}</small></div>`
     :`<div style="margin-top:10px"><b>No Dominator yet</b></div>`}</div>`}
+function statsC(){const s=S.d.stats;if(!s)return '';return `<h2 class="sec">League so far</h2><div class="card"><div class="stats" style="grid-template-columns:1fr 1fr"><div><div class="big">${s.sessions}</div><small>sessions</small></div><div><div class="big">${s.plays}</div><small>games logged</small></div></div>${s.top.length?`<p style="text-align:center;margin:12px 0 0;border-top:1px solid var(--bd);padding-top:10px"><small>Most played</small><br><b>${esc(s.top.join(' & '))}</b> <small>· ${s.topN} plays</small></p>`:''}</div>`}
 function boardV(){
   const d=S.d,dm=d.dominator;
-  let h=`<div class="seg"><button class="${S.lb==='top'?'on':''}" onclick="S.lb='top';render()">Top 3</button><button class="${S.lb==='acc'?'on':''}" onclick="S.lb='acc';render()">Accolades</button></div>`;
+  let h=`<div class="seg"><button class="${S.lb==='top'?'on':''}" onclick="S.lb='top';render()">Standings</button><button class="${S.lb==='acc'?'on':''}" onclick="S.lb='acc';render()">Accolades</button></div>`;
   if(S.lb==='top'){const t=d.top3||[];if(!t.length)return h+'<div class="card mu">No scores yet.</div>';
-    const col=r=>{const l=t.filter(p=>p.rank===r);if(!l.length)return '';const H={1:116,2:92,3:76}[r],c={1:'#b8962e',2:'#8d949b',3:'#a8683b'}[r];
+    const col=r=>{const l=t.filter(p=>p.rank===r);if(!l.length)return '';const H={1:148,2:120,3:96}[r],c={1:'#b8962e',2:'#8d949b',3:'#a8683b'}[r];
       return `<div class="pdc"><div class="pdn">${l.map(p=>{const w=p.name.split(' ');return `<span>${p.dom?svgS('crown',14)+' ':''}<b>${esc(w[0])}</b>${w.length>1?'<br><b>'+esc(w.slice(1).join(' '))+'</b>':''}</span>`}).join('')}</div><div class="pds ${r===1?'g1':''}" style="height:${H}px"><span style="color:${c}">${svgS('medal',r===1?34:26)}</span><div class="big">${l[0].total}</div><small>points</small></div></div>`};
     const f=t.filter(p=>p.rank===1),s2=t.find(p=>p.rank>1),gap=f.length===1&&s2?`<p class="mu" style="text-align:center;margin:12px 0 0;font-size:14px">${esc(f[0].name.split(' ')[0])} leads by ${f[0].total-s2.total} pts</p>`:'';
-    return h+`<div class="card"><div class="pdm">${col(2)}${col(1)}${col(3)}</div>${gap}</div>`}
+    return h+`<h2 class="sec" style="margin-top:4px">Podium</h2><div class="card"><div class="pdm">${col(2)}${col(1)}${col(3)}</div>${gap}</div>`+statsC()}
   h+=`<h2 class="sec" style="margin-top:4px">Awarded during the league</h2><div class="top">${tile({title:'Dominator',desc:'Most first place finishes',winners:dm.count?dm.names:[],points:dm.points,count:dm.count},false)}</div>
    <h2 class="sec">Awarded at the end of the league</h2><div class="top">${d.endTiles.map(t=>tile(t,true)).join('')}</div>`;
   if(d.secretTiles.length)h+=`<h2 class="sec">Voted by the league</h2><div class="top">${d.secretTiles.map(t=>tile(t,true)).join('')}</div>`;
@@ -234,10 +245,10 @@ function rulesV(){
   const tbl=`<div class="tbl"><table><tr><th></th>${[1,2,3,4].map(x=>`<th>Tier ${x}</th>`).join('')}</tr>${['1st','2nd','3rd','4th–7th'].map((r,i)=>`<tr><td>${r}</td>${t[i].map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</table></div>`;
   return `<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.rules=false;render()">← Back</button></div><h2>Rules and scoring</h2>
   ${sec('How points work',`<p>Each game result scores points based on your finishing place and the game's tier. A game needs 3 to 7 players to score, and 4th place and below all score the same.</p>${tbl}<p class="mu">To see which games are in each tier, open <a href="#" onclick="goG();return false" style="color:var(--ac)">Progress › Games</a>.</p>`,1)}
-  ${sec('Your top 10 scores',`<p>Your best 2 scores in each tier (8 scores) count, plus your next 2 best from any tier. No more than 2 scores can come from the same game. The most you can earn from playing is ${max} points. A dashed outline on the Qualifying tab means that score is below the top score for its tier.</p>`)}
-  ${sec('Bonus points',`<ul><li><b>Hosting</b> (each host earns)<ul><li>1 point for 4-5 people</li><li>2 points for 6-10 people</li><li>3 points for 11 or more</li></ul></li><li><b>Attending</b><ul><li>1 point for each session you attend</li></ul></li><li><b>Teaching</b><ul><li>1 point for a Tier 1-2 game</li><li>2 points for a Tier 3-4 game</li></ul></li><li><b>Learning</b><ul><li>1 point for each game you learn for the first time (not if you have already played or taught it)</li></ul></li></ul><p class="mu">Each category is capped at 10 points. Hosts count towards the number of people.</p>`)}
-  ${sec('Accolades and demerits',`<p>The Dominator (most first-place finishes) earns bonus points and can change hands during the league. Other accolades are awarded at the end of the league. Demerits deduct points.</p>`)}
-  ${sec('Logging games',`<p>A host creates the session and can add late arrivals. Any player in a game logs it. You can undo your own entry for 10 minutes after logging. After that, ask an admin to fix it.</p>`)}
+  ${sec('Your top 10 scores',`<ul><li>Your best 2 scores in each tier count (8 scores)</li><li>Plus your next 2 best scores from any tier</li><li>No more than 2 scores can come from the same game</li><li>The most you can earn from playing is ${max} points</li><li>A dashed outline on the Qualifying tab means the score is below the top score for its tier</li></ul>`)}
+  ${sec('Bonus points',`<ul><li><b>Hosting</b> (max 10 pts)<br>Each host earns (hosts are included in the count):<ul><li>1 point for 4-5 people</li><li>2 points for 6-10 people</li><li>3 points for 11 or more</li></ul></li><li><b>Attending</b> (max 10 pts)<ul><li>1 point for each session you attend</li></ul></li><li><b>Teaching</b> (max 10 pts)<ul><li>1 point for a Tier 1-2 game</li><li>2 points for a Tier 3-4 game</li></ul></li><li><b>Learning</b> (max 10 pts)<ul><li>1 point for each game you learn for the first time (not if you have already played or taught it)</li></ul></li></ul>`)}
+  ${sec('Accolades and demerits',`<ul><li>The Dominator (most first-place finishes) earns +5 points and can change hands during the league</li><li>Other accolades are revealed at the end of the league</li><li>Demerits deduct points</li></ul>`)}
+  ${sec('Logging games',`<ul><li>A host creates the session and can add late arrivals</li><li>Any player in a game can log it</li><li>You can undo your own entry for 10 minutes. After that, ask an admin to fix it</li></ul>`)}
   <p class="mu" style="text-align:center;margin-top:16px">Version ${VERSION}</p>`}
 
 /* ---------- log ---------- */
@@ -262,7 +273,7 @@ function gameV(){
   const left=ppl.filter(n=>!g.rank.includes(n));
   const go=[0,1,2,3].map(t=>`<optgroup label="Tier ${t+1}">${d.games.filter(x=>x.tier===t+1).sort((a,b)=>a.name.localeCompare(b.name)).map(x=>`<option ${x.name===g.game?'selected':''}>${esc(x.name)}</option>`).join('')}</optgroup>`).join('');
   return `<div class="card"><h2>1 · Session and game</h2><div class="row">
-   <select class="w" onchange="S.g={session:this.value,game:S.g.game,rank:[],teachers:[],learners:[]};render()">${sess.map(x=>`<option value="${x.id}" ${x.id===ss.id?'selected':''}>${esc(x.date)} · ${esc(x.hosts.join(', '))}</option>`).join('')}</select>
+   <select class="w" onchange="S.g={session:this.value,game:S.g.game,rank:[],teachers:[],learners:[]};render()">${sopt(sess,ss.id)}</select>
    <select class="w" onchange="S.g.game=this.value;render()"><option value="">Choose game</option>${go}</select></div>${gm?hintG(gm):''}</div>
   <div class="card"><h2>2 · Tap players in finishing order</h2>
    ${g.rank.map((n,i)=>`<div class="rk"><b>${ord(i)}</b><span style="flex:1">${esc(n)}</span><small>${gm&&g.rank.length>=3?'+'+S.d.table[Math.min(i,3)][gm.tier-1]+' pts':''}</small><button class="link" onclick="untap(${i})">Remove</button></div>`).join('')}
@@ -299,9 +310,9 @@ function lateV(){
   const d=S.d,mine=d.sessions.filter(x=>x.hosts.includes(S.player)).sort((a,b)=>b.date.localeCompare(a.date));
   if(!mine.length)return '';
   const l=S.late=S.late||{session:mine[0].id,add:[]},ss=mine.find(x=>x.id===l.session)||mine[0];l.session=ss.id;
-  return `<div class="card" style="margin-top:12px"><h2>Add late arrivals</h2><small>For a session you hosted</small>
-   <select class="w" style="margin:8px 0" onchange="S.late={session:this.value,add:[]};render()">${mine.map(x=>`<option value="${x.id}" ${x.id===ss.id?'selected':''}>${esc(x.date)} · ${esc(x.hosts.join(', '))}</option>`).join('')}</select>
-   <div>${d.players.filter(x=>!people(ss).includes(x)).map(x=>pk(l.add.includes(x),x,'tglLate')).join('')}</div>
+  return `<div class="card" style="margin-top:12px"><h2>1 · Session</h2><small>A session you hosted</small>
+   <select class="w" style="margin:8px 0" onchange="S.late={session:this.value,add:[]};render()">${sopt(mine,ss.id)}</select></div>
+   <div class="card"><h2>2 · Add late arrivals</h2><small>Who joined after it was created</small><div style="margin-top:8px">${d.players.filter(x=>!people(ss).includes(x)).map(x=>pk(l.add.includes(x),x,'tglLate')).join('')}</div>
    <button class="b p w" style="margin-top:6px" ${l.add.length?'':'disabled'} onclick="addLate()">Add to session</button></div>`}
 function tglLate(n){tog(S.late.add,n);render()}
 async function addLate(){if(await act('addAttendees',{session:S.late.session,add:S.late.add})){S.late=null;render()}}
@@ -316,14 +327,14 @@ const opts=(a,id)=>`<select id="${id}">${a.map(x=>`<option>${esc(x)}</option>`).
 const MAN_END=[['8th Wonder',8]],MAN_SEC=[['Saltiest player',4],["Wolf in sheep's clothing",5],['Luckiest player',7],['Negotiator',5],['Most Fun',5],['Strategist',5]],MAN=MAN_END.concat(MAN_SEC);
 function adminV(){
   const d=S.d;
-  if(!d.admin)return `<div class="card"><h2>Admin access</h2>${S.passErr?'<p class="err">Passcode not accepted.</p>':''}<div class="row"><input id="pw" type="password" placeholder="Admin passcode" class="w"><button class="b p w" onclick="S.pass=val('pw');S.passErr=false;sessionStorage.setItem('bgl_a',S.pass);load()">Unlock</button></div><p class="mu">Tap the lock icon again to return to the app.</p></div>`;
+  if(!d.admin)return `<div class="card"><h2>Admin access</h2>${S.passErr?`<p class="err">${S.passErr===2?'Too many attempts. Try again in 15 minutes.':'Passcode not accepted.'}</p>`:''}<div class="row"><input id="pw" type="password" placeholder="Admin passcode" class="w"><button class="b p w" onclick="S.pass=val('pw');S.passErr=false;sessionStorage.setItem('bgl_a',S.pass);load()">Unlock</button></div><p class="mu">Tap the lock icon again to return to the app.</p></div>`;
   return ({ranking:aRank,entries:aEntries,settings:aSettings})[S.atab]()}
 function aRank(){
   const bx=S.bx;
   return `<div class="card"><h2>Full ranking</h2><p class="mu">Total is what players see${S.d.revEnd&&S.d.revSecret?'':' (unrevealed accolades excluded)'}. Projected includes all accolades.</p>
   <button class="b s" onclick="S.bx=!S.bx;render()">${bx?'Hide':'Show'} bonus and accolade breakdown</button><div class="tbl" style="margin-top:8px"><table class="rt">
   ${bx?'<tr><th></th><th></th><th></th><th></th><th colspan="4" style="text-align:center;border-bottom:1px solid var(--bd)">Bonus points</th><th></th><th colspan="2" style="text-align:center;border-bottom:1px solid var(--bd)">Accolades</th></tr>':''}
-  <tr><th>Player</th><th>Total</th><th>Proj (#)</th><th>Play</th>${bx?'<th>Host</th><th>Attend</th><th>Teach</th><th>Learn</th>':'<th>Bonus</th>'}<th>Dem</th><th>Public</th><th>Hidden</th></tr>
+  <tr><th>Player</th><th>Total</th><th>Proj (#)</th><th>Play</th>${bx?'<th>Host</th><th>Attend</th><th>Teach</th><th>Learn</th>':'<th>Bonus</th>'}<th>Demerit</th><th>Public</th><th>Hidden</th></tr>
   ${S.d.ranking.map(r=>`<tr><td>${r.rank}. ${esc(r.name)}${r.retired?' <small>(retired)</small>':''}</td><td><b>${r.total}</b></td><td>${r.proj} (#${r.projRank})</td><td>${r.playing}</td>${bx?`${[r.hosting,r.attending,r.teaching,r.learning].map(v=>`<td class="${v>=10?'mx':''}">${v}</td>`).join('')}`:`<td>${r.hosting+r.attending+r.teaching+r.learning}</td>`}<td>${r.dem}</td><td>${r.dom}</td><td>${r.hidden}</td></tr>`).join('')}</table></div></div>`}
 function aSettings(){
   const subs=[['awards','Awards'],['games','Games'],['players','Players'],['data','Data']];
@@ -367,11 +378,12 @@ function aAwards(){
    revCard('secret','Reveal secret accolades','Shows the voted accolades and counts their points in players\u2019 totals. Until then, players cannot see that they exist.',d.revSecret)}
 
 /* data */
-function aData(){return `<div class="card"><h2>Backup</h2><p class="mu">Download everything (players, games, sessions, results, accolades, demerits) as a file you can re-import later.</p><button class="b p w" onclick="exportData()">Export backup</button></div>
+function bk(){const lb=S.d.lastBackup,days=lb?Math.floor((Date.now()-Date.parse(lb))/864e5):null,old=days===null||days>30;return `<p style="${old?'background:var(--wn);color:var(--wnt);padding:8px 12px;border-radius:10px;':''}margin:0 0 10px" class="${old?'':'mu'}">Last backup: ${lb?fd(lb.slice(0,10))+' ('+(days<1?'today':days+' day'+(days===1?'':'s')+' ago')+')':'never'}${old?'. Time for a new one.':''}</p>`}
+function aData(){return `<div class="card"><h2>Backup</h2><p class="mu">Download everything (players, games, sessions, results, accolades, demerits) as a file you can re-import later.</p>${bk()}<button class="b p w" onclick="exportData()">Export backup</button></div>
   <div class="card"><h2>Import data</h2><p class="mu">Replaces <b>all</b> existing data with a backup file. Export a backup first.</p><button class="b p w" onclick="$('#imp').click()">Choose backup file</button><input id="imp" type="file" accept=".json" hidden onchange="pickImp(this)">
    ${S.imp?`<p style="margin:12px 0 8px">Selected: <b>${esc(S.imp.name)}</b></p><div class="row"><button class="b danger" onclick="doImp()">Replace all data</button><button class="b" onclick="S.imp=null;render()">Cancel</button></div>`:''}</div>
   <div class="card"><h2>Admin session</h2><p class="mu">App version ${VERSION}</p><button class="b w" onclick="S.pass='';sessionStorage.removeItem('bgl_a');S.admin=false;load()">Lock admin</button></div>`}
-async function exportData(){try{const r=await api('export');if(r.error)return flash(r.error);const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(r,null,1)],{type:'application/json'}));a.download='bgl-backup-'+today()+'.json';a.click()}catch(e){flash('Export failed')}}
+async function exportData(){try{const r=await api('export');if(r.error)return flash(r.error);const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(r,null,1)],{type:'application/json'}));a.download='bgl-backup-'+today()+'.json';a.click();S.d.lastBackup=new Date().toISOString();render()}catch(e){flash('Export failed')}}
 function pickImp(el){const f=el.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{S.imp={name:f.name,text:r.result};render()};r.readAsText(f)}
 async function doImp(){if(!confirm('Replace ALL existing data with this file? This cannot be undone.'))return;
   let d;try{d=JSON.parse(S.imp.text)}catch(e){return flash('That file is not valid JSON')}
@@ -384,10 +396,15 @@ function aEntries(){
   const ses=id=>d.allSessions.find(s=>s.id===id)||{date:'',hosts:[]};
   const eb=(k,id)=>`<button class="b s" data-id="${esc(id)}" onclick="${k}(this.dataset.id)">Edit</button>`;
   let h=`<div class="seg"><button class="${mode==='review'?'on':''}" onclick="S.ev='review';render()">Needs review (${n})</button><button class="${mode==='all'?'on':''}" onclick="S.ev='all';render()">All entries</button></div>`;
-  if(mode==='review')return h+(n?d.plays.filter(p=>fl[p.id]).map(p=>`<div class="card bad"><b>${esc(p.game)}</b> <small>· ${esc(ses(p.session).date)}</small><p style="margin:4px 0">${esc(fl[p.id])}</p><small>${esc(p.places.join(' > '))}</small><div style="margin-top:10px;display:flex;gap:6px">${eb('editPlay',p.id)}${del('Plays',p.id)}</div></div>`).join(''):'<div class="card ok">Nothing needs review.</div>');
-  return h+d.allSessions.slice().sort((a,b)=>b.date.localeCompare(a.date)).map((s,i)=>{
-    const pl=d.plays.filter(p=>p.session===s.id),nf=pl.filter(p=>fl[p.id]).length;
-    return det('s'+s.id,false,`<span><b>${esc(s.date)}</b><br><small>${esc(s.hosts.join(', '))}</small></span><small style="white-space:nowrap">${pl.length} game${pl.length===1?'':'s'}</small>`,
+  if(mode==='review')return h+(n?d.plays.filter(p=>fl[p.id]).map(p=>`<div class="card bad"><b>${esc(p.game)}</b> <small>· ${fd(ses(p.session).date)}</small><p style="margin:4px 0">${esc(fl[p.id])}</p><small>${esc(p.places.join(' > '))}</small><div style="margin-top:10px;display:flex;gap:6px">${eb('editPlay',p.id)}${del('Plays',p.id)}</div></div>`).join(''):'<div class="card ok">Nothing needs review.</div>');
+  return h+`<input class="w" id="es" placeholder="Search game, player or host" value="${esc(S.es||'')}" oninput="S.es=this.value;$('#el').innerHTML=entList()" style="margin-bottom:12px"><div id="el">${entList()}</div>`}
+function entList(){
+  const d=S.d,fl=d.flags,q=(S.es||'').trim().toLowerCase(),eb=(k,id)=>`<button class="b s" data-id="${esc(id)}" onclick="${k}(this.dataset.id)">Edit</button>`;let ly='';
+  return d.allSessions.slice().sort((a,b)=>b.date.localeCompare(a.date)).map((s,i)=>{
+    const all=d.plays.filter(p=>p.session===s.id),hm=s.hosts.join(' ').toLowerCase().includes(q),pm=all.filter(p=>(p.game+' '+p.places.join(' ')).toLowerCase().includes(q));
+    if(q&&!hm&&!pm.length)return '';
+    const pl=q&&!hm?pm:all,nf=all.filter(p=>fl[p.id]).length,yh=s.date.slice(0,4)!==ly?`<h2 class="sec">${ly=s.date.slice(0,4)}</h2>`:'';
+    return yh+det('s'+s.id,!!q,`<span><b>${md(s.date)}</b><br><small>${esc(s.hosts.join(', '))}</small></span><small style="white-space:nowrap">${pl.length} game${pl.length===1?'':'s'}</small>`,
      ar(`<small>${pp(s.hosts.length+s.attendees.length)}</small>`,eb('editSes',s.id)+del('Sessions',s.id))+
      pl.map(p=>ar(`<b>${esc(p.game)}</b><br><small>${esc(p.places.join(' > '))}</small>${fl[p.id]?'<br><small>'+esc(fl[p.id])+'</small>':''}`,eb('editPlay',p.id)+del('Plays',p.id),fl[p.id]?'bad':'')).join(''),nf?'rv':'')}).join('')}
 function editSes(id){const s=S.d.allSessions.find(x=>x.id===id);S.edit={kind:'ses',id:id,date:s.date,hosts:s.hosts.slice(),attendees:s.attendees.slice()};render();scrollTo(0,0)}
@@ -399,7 +416,7 @@ function editV(){
    <div class="card"><h2>Attendees</h2><small>Anyone in a logged game must stay in the session</small><div style="margin-top:8px">${AN(d).filter(x=>!e.hosts.includes(x)).map(x=>pk(e.attendees.includes(x),x,'eA')).join('')}</div></div>`+btn;
   const ss=d.allSessions.find(x=>x.id===e.session),ppl=people(ss),gm=d.allGames.find(x=>x.name===e.game),left=ppl.filter(n=>!e.rank.includes(n));
   const go=[1,2,3,4].map(t=>`<optgroup label="Tier ${t}">${d.allGames.filter(x=>x.tier===t).sort((a,b)=>a.name.localeCompare(b.name)).map(x=>`<option ${x.name===e.game?'selected':''}>${esc(x.name)}${x.retired?'':''}</option>`).join('')}</optgroup>`).join('');
-  return `<div class="card"><h2>Edit game</h2><small>Session</small><select class="w" style="margin:4px 0 8px" onchange="S.edit.session=this.value;render()">${d.allSessions.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(x=>`<option value="${esc(x.id)}" ${x.id===e.session?'selected':''}>${esc(x.date)} · ${esc(x.hosts.join(', '))}</option>`).join('')}</select><small>Game</small><select class="w" style="margin-top:4px" onchange="S.edit.game=this.value;render()">${go}</select></div>
+  return `<div class="card"><h2>Edit game</h2><small>Session</small><select class="w" style="margin:4px 0 8px" onchange="S.edit.session=this.value;render()">${sopt(d.allSessions.slice().sort((a,b)=>b.date.localeCompare(a.date)),e.session)}</select><small>Game</small><select class="w" style="margin-top:4px" onchange="S.edit.game=this.value;render()">${go}</select></div>
    <div class="card"><h2>Finishing order</h2>${e.rank.map((n,i)=>`<div class="rk"><b>${ord(i)}</b><span style="flex:1">${esc(n)}</span><small>${gm&&e.rank.length>=3?'+'+d.table[Math.min(i,3)][gm.tier-1]+' pts':''}</small><button class="link" onclick="eUntap(${i})">Remove</button></div>`).join('')}
     <div style="margin-top:10px">${left.map(n=>pk(0,n,'eTap')).join('')||'<small>Everyone is ranked.</small>'}</div></div>
    <div class="card"><h2>Teaching</h2><div>${ppl.map(n=>pk(e.teachers.includes(n),n,'eT')).join('')}</div></div>
