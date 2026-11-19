@@ -15,6 +15,9 @@
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#161816;--card:#1f221f;--bd:#33372f;--tx:#ecece7;--mu:#9a9f96;--ac:#7fb5a3;--ac2:#243029;--er:#f2b8b5;--er2:#3b1f1d;--wn:#3a2f17;--wnt:#f0c36d}}
 :root[data-acc=blue]{--ac:#35618f;--ac2:#e8eef5}
 :root[data-acc=blue][data-theme=dark]{--ac:#8fb4de;--ac2:#232c38}
+:root[data-acc=terracotta]{--ac:#9c4a2f;--ac2:#f6e9e3}:root[data-acc=plum]{--ac:#6a4c7d;--ac2:#efe9f3}
+:root[data-acc=terracotta][data-theme=dark]{--ac:#e0a08a;--ac2:#382620}:root[data-acc=plum][data-theme=dark]{--ac:#c4a5d8;--ac2:#2e2536}
+@media(prefers-color-scheme:dark){:root[data-acc=terracotta]:not([data-theme=light]){--ac:#e0a08a;--ac2:#382620}:root[data-acc=plum]:not([data-theme=light]){--ac:#c4a5d8;--ac2:#2e2536}}
 @media(prefers-color-scheme:dark){:root[data-acc=blue]:not([data-theme=light]){--ac:#8fb4de;--ac2:#232c38}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%}
@@ -83,31 +86,38 @@ h1{display:flex;align-items:center;gap:8px}details.card summary{gap:10px;align-i
 @media(min-width:700px){#app{padding-bottom:100px}}
 details.card.rv{border:2px solid var(--er);background:var(--er2)}
 .mx{color:var(--ac);font-weight:700}
-.pdm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:end;margin:6px 0 4px}
+.pdm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:end;margin:6px 0 4px;border-bottom:3px solid var(--mu);border-radius:0 0 2px 2px}
 .pdc{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0}
 .pdn{font-size:14px;line-height:1.25;min-height:38px;display:flex;flex-direction:column;justify-content:flex-end;width:100%;margin-bottom:6px;overflow-wrap:anywhere}
-.pds{width:100%;background:var(--card);border:1px solid var(--bd);border-radius:10px 10px 0 0;display:flex;flex-direction:column;align-items:center;padding-top:8px;gap:2px}
-.pds.g1{border:2px solid #b8962e}.pds .big{font-size:22px}.pds.g1 .big{font-size:26px}
+.pds{width:100%;position:relative;overflow:hidden;background:var(--card);border-bottom:0;border-radius:4px 4px 0 0;box-shadow:0 3px 6px rgba(0,0,0,.12);display:flex;flex-direction:column;align-items:center;padding-top:8px;gap:2px}
+.pds::before{content:"";position:absolute;left:0;right:0;top:0;height:10px;background:linear-gradient(rgba(255,255,255,.55),rgba(255,255,255,.15));border-bottom:1px solid var(--bd)}
+.pds>:first-child{margin-top:6px}
+.pds.s1{border:2px solid #b8962e;border-bottom:0;background:linear-gradient(rgba(184,150,46,.34),rgba(184,150,46,.12)),var(--card)}
+.pds.s2{border:2px solid #8d949b;border-bottom:0;background:linear-gradient(rgba(141,148,155,.36),rgba(141,148,155,.14)),var(--card)}
+.pds.s3{border:2px solid #a8683b;border-bottom:0;background:linear-gradient(rgba(168,104,59,.32),rgba(168,104,59,.12)),var(--card)}
+.pds.go::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.75) 50%,transparent 65%);transform:translateX(-130%);animation:shm 1.4s ease-out .2s 1 forwards}
+@keyframes shm{to{transform:translateX(130%)}}@media(prefers-reduced-motion:reduce){.pds.go::after{display:none}}
+.pds .big{font-size:22px;color:var(--tx)}.pds.s1 .big{font-size:26px}
 .hrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.hrow .pl{margin:0}
-.bar{height:4px;border-radius:2px;background:var(--bd);margin-top:4px;width:100%;max-width:64px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+.tbar{display:block;height:4px;border-radius:2px;background:var(--bd);margin-top:4px;width:100%;max-width:64px;overflow:hidden}.tbar.fw{max-width:none;flex:1;margin-top:0}.tbar i{display:block;height:100%;background:var(--ac)}
 .tb{display:flex;gap:2px;height:10px;margin:8px 0 4px}.tb i{border-radius:3px;background:var(--bd)}.tb i.hi{background:var(--ac)}.tl2{display:flex;justify-content:space-between;font-size:12px;color:var(--mu)}
 .srch{position:relative;margin-bottom:12px}.srch input{width:100%;padding-left:38px;padding-right:40px}.srch .si{position:absolute;left:12px;top:13px;color:var(--mu);pointer-events:none}.srch .link{position:absolute;right:2px;top:0;font-size:22px}
 .hc.nc{color:var(--mu)}.chip .sc{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;flex:none}.chip .sc small{font-size:11px;color:var(--mu)}
 .tg{color:var(--ac);font-size:18px;line-height:1;margin-left:2px}
 </style></head><body><div id="app">Loading…</div><div id="msg"></div>
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbylineVYJMcLU1wJTExM8rK9xNjlXQytHZJkhMixJj4GoMLaoH0UOidElepfzLV6J2Y/exec';
+const API_URL='PASTE_YOUR_WEB_APP_URL_HERE';
 const S={code:localStorage.getItem('bgl_c')||'',player:localStorage.getItem('bgl_p')||'',pass:sessionStorage.getItem('bgl_a')||'',
   tab:'progress',view:'qual',rules:false,lb:'top',hv:'tier',hs:'12',ds:'new',ret:false,open:-1,atab:'ranking',sub:'awards',ev:null,edit:null,gt:{},imp:null,late:null,lmode:'game',admin:false,sec:'ranking',d:null,busy:false,s:null,g:null,done:null,q:'',err:''};
 const $=q=>document.querySelector(q),val=id=>$('#'+id).value;
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const VERSION='v9';
+const VERSION='v1.0';
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const LOGO=n=>`<img src="icon-192.png" width="${n}" height="${n}" alt="" style="border-radius:22%;flex:none">`;
 const pp=n=>n+(n===1?' person':' people');
 const det=(k,def,sum,body,cls)=>`<details class="card ${cls||''}" ${(S.gt[k]===undefined?def:S.gt[k])?'open':''} ontoggle="S.gt['${k}']=this.open"><summary>${sum}</summary><div class="in">${body}</div></details>`;
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],md=d=>MON[+d.slice(5,7)-1]+' '+(+d.slice(8,10)),fd=d=>md(d)+', '+d.slice(0,4),sp=s=>(s&&s.pts)||0;
-const sn=id=>((S.d&&S.d.sn)||{})[id]?'#'+S.d.sn[id]+' · ':'',MD=d=>md(d).toUpperCase(),tp=(a,b)=>`<small>${a>=b?'✓ ':''}${a}/${b} pts</small><div class="bar"><i style="width:${Math.min(100,Math.round(a/b*100))}%"></i></div>`;
+const sn=id=>((S.d&&S.d.sn)||{})[id]?'#'+S.d.sn[id]+' · ':'',MD=d=>md(d).toUpperCase(),tp=(a,b)=>`<small>${a}/${b}</small><div class="tbar"><i style="width:${Math.min(100,Math.round(a/b*100))}%"></i></div>`,tpg=(t,a,b,pl,n)=>`<span style="flex:1;min-width:0"><span style="display:flex;justify-content:space-between;align-items:center"><b>Tier ${t}</b><small>${pl} of ${n} played</small></span><span style="display:flex;align-items:center;gap:8px;margin-top:6px"><span class="tbar fw"><i style="width:${Math.min(100,Math.round(a/b*100))}%"></i></span><small>${a}/${b}</small></span></span>`;
 const sopt=(l,sel)=>{const by={};l.forEach(x=>(by[x.date.slice(0,4)]=by[x.date.slice(0,4)]||[]).push(x));return Object.keys(by).sort().reverse().map(y=>`<optgroup label="${y}">${by[y].map(x=>`<option value="${esc(x.id)}" ${x.id===sel?'selected':''}>${sn(x.id)}${MD(x.date)} · ${esc(x.hosts.join(', '))}</option>`).join('')}</optgroup>`).join('')};
 const ord=i=>['1st','2nd','3rd'][i]||(i+1)+'th';
 const tog=(a,v)=>{const i=a.indexOf(v);i<0?a.push(v):a.splice(i,1)};
@@ -221,7 +231,7 @@ function gamesV(ids){
     const names=new Set(S.d.games.filter(g=>g.tier===t).map(g=>g.name));m.history.filter(h=>h.tier===t).forEach(h=>names.add(h.game));
     const l=[...names].sort((a,b)=>(cnt[b]||0)-(cnt[a]||0)||a.localeCompare(b)),played=l.filter(n=>cnt[n]).length;
     const body=l.map(n=>{const k=cc[n]||0;return `<div class="li ${cnt[n]?'':'mu'}"><span class="nm">${esc(n)}</span><span class="mt"><small>${cnt[n]?'played '+cnt[n]:'not played'}</small> <span class="dots" role="img" aria-label="${k} of 2 counting">${'●'.repeat(k)}${'○'.repeat(2-k)}</span></span></div>`}).join('');
-    return det('g'+t,false,`<span><b>Tier ${t}</b> ${tp(sp(m.slots[t*2-2])+sp(m.slots[t*2-1]),2*mx(t-1))}</span><small>${played} of ${l.length} played</small>`,body)}).join('')}
+    return det('g'+t,false,tpg(t,sp(m.slots[t*2-2])+sp(m.slots[t*2-1]),2*mx(t-1),played,l.length),body)}).join('')}
 function hintG(gm){
   const m=S.d.me;if(!m)return '';const ids={};m.slots.forEach(x=>{if(x.id)ids[x.id]=1});let n=0,k=0;
   m.history.forEach(h=>{if(h.game===gm.name){n++;if(ids[h.id])k++}});
@@ -240,11 +250,11 @@ function statsC(){const s=S.d.stats;if(!s)return '';return `<h2 class="sec">Leag
 function boardV(){
   const d=S.d,dm=d.dominator;
   let h=`<div class="seg"><button class="${S.lb==='top'?'on':''}" onclick="S.lb='top';render()">Standings</button><button class="${S.lb==='acc'?'on':''}" onclick="S.lb='acc';render()">Accolades</button></div>`;
-  if(S.lb==='top'){const t=d.top3||[];if(!t.length)return h+'<div class="card mu">No scores yet.</div>';
+  if(S.lb==='top'){const sh=!S.shimmed,t=d.top3||[];if(!t.length)return h+'<div class="card mu">No scores yet.</div>';
     const col=r=>{const l=t.filter(p=>p.rank===r);if(!l.length)return '';const H={1:148,2:120,3:96}[r],c={1:'#b8962e',2:'#8d949b',3:'#a8683b'}[r];
-      return `<div class="pdc"><div class="pdn">${l.map(p=>{const w=p.name.split(' ');return `<span>${p.dom?svgS('crown',14)+' ':''}<b>${esc(w[0])}</b>${w.length>1?'<br><b>'+esc(w.slice(1).join(' '))+'</b>':''}</span>`}).join('')}</div><div class="pds ${r===1?'g1':''}" style="height:${H}px"><span style="color:${c}">${svgS('medal',r===1?34:26)}</span><div class="big">${l[0].total}</div><small>points</small></div></div>`};
+      return `<div class="pdc"><div class="pdn">${l.map(p=>{const w=p.name.split(' ');return `<span>${p.dom?svgS('crown',14)+' ':''}<b>${esc(w[0])}</b>${w.length>1?'<br><b>'+esc(w.slice(1).join(' '))+'</b>':''}</span>`}).join('')}</div><div class="pds s${r}${r===1&&sh?' go':''}" style="height:${H}px"><span style="color:${c}">${svgS('medal',r===1?34:26)}</span><div class="big">${l[0].total}</div><small>points</small></div></div>`};
     const f=t.filter(p=>p.rank===1),s2=t.find(p=>p.rank>1),gap=f.length===1&&s2?`<p class="mu" style="text-align:center;margin:12px 0 0;font-size:14px">${esc(f[0].name.split(' ')[0])} leads by ${f[0].total-s2.total} pts</p>`:'';
-    return h+`<h2 class="sec" style="margin-top:4px">Podium</h2><div class="card"><div class="pdm">${col(2)}${col(1)}${col(3)}</div>${gap}</div>`+statsC()}
+    S.shimmed=true;return h+`<h2 class="sec" style="margin-top:4px">Podium</h2><div class="card"><div class="pdm">${col(2)}${col(1)}${col(3)}</div>${gap}</div>`+statsC()}
   h+=`<h2 class="sec" style="margin-top:4px">Awarded during the league</h2><div class="top">${tile({title:'Dominator',desc:'Most first place finishes',winners:dm.count?dm.names:[],points:dm.points,count:dm.count},false)}</div>
    <h2 class="sec">Awarded at the end of the league</h2><div class="top">${d.endTiles.map(t=>tile(t,true)).join('')}</div>`;
   if(d.secretTiles.length)h+=`<h2 class="sec">Voted by the league</h2><div class="top">${d.secretTiles.map(t=>tile(t,true)).join('')}</div>`;
@@ -270,7 +280,7 @@ function undoV(){
 function applyPrefs(){const r=document.documentElement,t=localStorage.getItem('bgl_th')||'system',a=localStorage.getItem('bgl_ac')||'sage';if(t==='system')r.removeAttribute('data-theme');else r.dataset.theme=t;if(a==='sage')r.removeAttribute('data-acc');else r.dataset.acc=a}
 function setPref(k,v){localStorage.setItem(k,v);applyPrefs();render()}
 function prefV(){const t=localStorage.getItem('bgl_th')||'system',a=localStorage.getItem('bgl_ac')||'sage';
-  return `<div class="card"><h2>Appearance</h2><small>Theme</small><div class="seg" style="margin:6px 0 14px">${[['light','Light'],['dark','Dark'],['system','Match system']].map(x=>`<button class="${t===x[0]?'on':''}" onclick="setPref('bgl_th','${x[0]}')">${x[1]}</button>`).join('')}</div><small>Accent colour</small><div class="row" style="margin-top:6px">${[['sage','Sage','#2f5d50'],['blue','Cornflower','#35618f']].map(x=>`<button class="b" aria-pressed="${a===x[0]}" style="display:flex;gap:8px;align-items:center;${a===x[0]?'border:2px solid var(--ac)':''}" onclick="setPref('bgl_ac','${x[0]}')"><span style="width:16px;height:16px;border-radius:50%;background:${x[2]}"></span>${x[1]}</button>`).join('')}</div><small class="mu" style="display:block;margin-top:8px">Saved on this device only.</small></div>
+  return `<div class="card"><h2>Appearance</h2><small>Theme</small><div class="seg" style="margin:6px 0 14px">${[['light','Light'],['dark','Dark'],['system','System']].map(x=>`<button class="${t===x[0]?'on':''}" onclick="setPref('bgl_th','${x[0]}')">${x[1]}</button>`).join('')}</div><small>Accent colour</small><div class="row" style="margin-top:6px">${[['sage','Sage','#2f5d50'],['blue','Cornflower','#35618f'],['terracotta','Terracotta','#9c4a2f'],['plum','Plum','#6a4c7d']].map(x=>`<button aria-label="${x[1]}" aria-pressed="${a===x[0]}" style="width:40px;height:40px;min-height:40px;border-radius:50%;border:2px solid var(--card);background:${x[2]};padding:0;${a===x[0]?'box-shadow:0 0 0 2px var(--tx)':''}" onclick="setPref('bgl_ac','${x[0]}')"></button>`).join('')}</div><small class="mu" style="display:block;margin-top:8px">Saved on this device only.</small></div>
   ${S.player?`<div class="card"><h2>Player</h2><p style="margin:0 0 10px">Playing as <b>${esc(S.player)}</b></p><button class="b w" onclick="S.player='';localStorage.removeItem('bgl_p');S.rules=false;render()">Change player</button></div>`:''}`}
 function rulesV(){const p=S.hp==='pref';return `<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.rules=false;render()">← Back</button></div><div class="seg" style="margin-bottom:12px"><button class="${p?'':'on'}" onclick="S.hp='faq';render()">FAQ</button><button class="${p?'on':''}" onclick="S.hp='pref';render()">Preferences</button></div>${p?prefV():faqV()}<p class="mu" style="text-align:center;margin-top:16px;font-size:13px">© 2026 XMG Partners · ${VERSION}</p>`}
 function logV(){
@@ -398,7 +408,8 @@ function bk(){const lb=S.d.lastBackup,days=lb?Math.floor((Date.now()-Date.parse(
 function aData(){return `<div class="card"><h2>Backup</h2><p class="mu">Download everything (players, games, sessions, results, accolades, demerits) as a file you can re-import later.</p>${bk()}<button class="b p w" onclick="exportData()">Export backup</button></div>
   <div class="card"><h2>Import data</h2><p class="mu">Replaces <b>all</b> existing data with a backup file. Export a backup first.</p><button class="b p w" onclick="$('#imp').click()">Choose backup file</button><input id="imp" type="file" accept=".json" hidden onchange="pickImp(this)">
    ${S.imp?`<p style="margin:12px 0 8px">Selected: <b>${esc(S.imp.name)}</b></p><div class="row"><button class="b danger" onclick="doImp()">Replace all data</button><button class="b" onclick="S.imp=null;render()">Cancel</button></div>`:''}</div>
-  <div class="card"><h2>Admin session</h2><p class="mu">App version ${VERSION}</p><button class="b w" onclick="S.pass='';sessionStorage.removeItem('bgl_a');S.admin=false;load()">Lock admin</button></div>`}
+  <div class="card"><h2>Admin session</h2><button class="b w" style="display:flex;align-items:center;justify-content:center;gap:8px" onclick="S.pass='';sessionStorage.removeItem('bgl_a');S.admin=false;load()">${svgS('lock',18)} Lock admin</button></div>
+  <p class="mu" style="text-align:center;font-size:13px;margin-top:16px">© 2026 XMG Partners · ${VERSION}</p>`}
 async function exportData(){try{const r=await api('export');if(r.error)return flash(r.error);const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(r,null,1)],{type:'application/json'}));a.download='bgl-backup-'+today()+'.json';a.click();S.d.lastBackup=new Date().toISOString();render()}catch(e){flash('Export failed')}}
 function pickImp(el){const f=el.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{S.imp={name:f.name,text:r.result};render()};r.readAsText(f)}
 async function doImp(){if(!confirm('Replace ALL existing data with this file? This cannot be undone.'))return;
