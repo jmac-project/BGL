@@ -282,7 +282,7 @@ function setPref(k,v){localStorage.setItem(k,v);applyPrefs();render()}
 function prefV(){const t=localStorage.getItem('bgl_th')||'system',a=localStorage.getItem('bgl_ac')||'sage';
   return `<div class="card"><h2>Appearance</h2><small>Theme</small><div class="seg" style="margin:6px 0 14px">${[['light','Light'],['dark','Dark'],['system','System']].map(x=>`<button class="${t===x[0]?'on':''}" onclick="setPref('bgl_th','${x[0]}')">${x[1]}</button>`).join('')}</div><small>Accent colour</small><div class="row" style="margin-top:6px">${[['sage','Sage','#2f5d50'],['blue','Cornflower','#35618f'],['terracotta','Terracotta','#9c4a2f'],['plum','Plum','#6a4c7d']].map(x=>`<button aria-label="${x[1]}" aria-pressed="${a===x[0]}" style="width:40px;height:40px;min-height:40px;border-radius:50%;border:2px solid var(--card);background:${x[2]};padding:0;${a===x[0]?'box-shadow:0 0 0 2px var(--tx)':''}" onclick="setPref('bgl_ac','${x[0]}')"></button>`).join('')}</div><small class="mu" style="display:block;margin-top:8px">Saved on this device only.</small></div>
   ${S.player?`<div class="card"><h2>Player</h2><p style="margin:0 0 10px">Playing as <b>${esc(S.player)}</b></p><button class="b w" onclick="S.player='';localStorage.removeItem('bgl_p');S.rules=false;render()">Change player</button></div>`:''}`}
-function rulesV(){const p=S.hp==='pref';return `<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.rules=false;render()">← Back</button></div><div class="seg" style="margin-bottom:12px"><button class="${p?'':'on'}" onclick="S.hp='faq';render()">FAQ</button><button class="${p?'on':''}" onclick="S.hp='pref';render()">Preferences</button></div>${p?prefV():faqV()}<p class="mu" style="text-align:center;margin-top:16px;font-size:13px">© 2026 XMG Partners · ${VERSION}</p>`}
+function rulesV(){const p=S.hp==='pref';return `<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.rules=false;render()">← Back</button></div><div class="seg" style="margin-bottom:12px"><button class="${p?'':'on'}" onclick="S.hp='faq';render()">FAQ</button><button class="${p?'on':''}" onclick="S.hp='pref';render()">Preferences</button></div>${p?prefV():faqV()}<p class="mu" style="text-align:center;margin-top:16px;font-size:13px">© 2026 XMG Projects · ${VERSION}</p>`}
 function logV(){
   const hosts=S.d.sessions.some(x=>x.hosts.includes(S.player));
   if(S.lmode==='late'&&!hosts)S.lmode='game';
@@ -409,7 +409,7 @@ function aData(){return `<div class="card"><h2>Backup</h2><p class="mu">Download
   <div class="card"><h2>Import data</h2><p class="mu">Replaces <b>all</b> existing data with a backup file. Export a backup first.</p><button class="b p w" onclick="$('#imp').click()">Choose backup file</button><input id="imp" type="file" accept=".json" hidden onchange="pickImp(this)">
    ${S.imp?`<p style="margin:12px 0 8px">Selected: <b>${esc(S.imp.name)}</b></p><div class="row"><button class="b danger" onclick="doImp()">Replace all data</button><button class="b" onclick="S.imp=null;render()">Cancel</button></div>`:''}</div>
   <div class="card"><h2>Admin session</h2><button class="b w" style="display:flex;align-items:center;justify-content:center;gap:8px" onclick="S.pass='';sessionStorage.removeItem('bgl_a');S.admin=false;load()">${svgS('lock',18)} Lock admin</button></div>
-  <p class="mu" style="text-align:center;font-size:13px;margin-top:16px">© 2026 XMG Partners · ${VERSION}</p>`}
+  <p class="mu" style="text-align:center;font-size:13px;margin-top:16px">© 2026 XMG Projects · ${VERSION}</p>`}
 async function exportData(){try{const r=await api('export');if(r.error)return flash(r.error);const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(r,null,1)],{type:'application/json'}));a.download='bgl-backup-'+today()+'.json';a.click();S.d.lastBackup=new Date().toISOString();render()}catch(e){flash('Export failed')}}
 function pickImp(el){const f=el.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{S.imp={name:f.name,text:r.result};render()};r.readAsText(f)}
 async function doImp(){if(!confirm('Replace ALL existing data with this file? This cannot be undone.'))return;
@@ -510,7 +510,7 @@ window.showFin=showFin;
 const EMP={'No games yet.':'The board is set. Pieces are waiting.','No scores yet.':'The dice are still in the cup. Scores will land here.'};
 const RARE=['Spreadsheet gods appeased.','The dice gods approve.','History will remember this.'];
 function fx(){
- document.querySelectorAll('p.mu').forEach(e=>{if(e.textContent.indexOf('XMG Partners')>=0)e.textContent=e.textContent.replace('XMG Partners','XMG Projects')});
+ document.querySelectorAll('p.mu').forEach(e=>{if(e.textContent.indexOf('XMG Projects')>=0)e.textContent=e.textContent.replace('XMG Projects','XMG Projects')});
  document.querySelectorAll('.card.mu').forEach(e=>{const t=e.textContent.trim();if(EMP[t])e.textContent=EMP[t];else if(t.indexOf('No sessions yet.')===0)e.textContent='The table is empty. A host needs to create a session first.'});
  if(!S.done)S.doneFx=0;else if(!S.doneFx&&/^Logged:/.test(S.done)){S.doneFx=1;const b=document.querySelector('.card.ok b');if(b&&Math.random()<.05)b.textContent=S.done+' '+RARE[Math.floor(Math.random()*3)]}
  const d=S.d;if(!d||d.admin||!S.player||S.admin||S.rules||$('#pop'))return;
