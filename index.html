@@ -464,4 +464,79 @@ async function saveEdit(){
 (function(){try{const c=JSON.parse(localStorage.getItem('bgl_cache_'+S.player));if(c&&c.me&&S.code){c.admin=false;S.d=c;c._t=Date.now()-9e5}}catch(e){}})();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.code&&S.d&&!S.busy&&Date.now()-S.d._t>30000)load()});
 applyPrefs();render();load();
-</script></body></html>
+</script><!-- BGL v8: Backroom, achievements pop-ups, end-of-league finale, easter eggs. Paste this whole block just before </body>. -->
+<style>
+#pop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}
+#pop .pc{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:24px 20px;max-width:340px;width:100%;text-align:center;animation:pin .35s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pin{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.bgd{width:96px;height:96px;border-radius:50%;background:var(--ac2);color:var(--ac);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.bgd svg{width:52px;height:52px}
+.cf{position:fixed;top:-12px;width:8px;height:12px;z-index:30;pointer-events:none;animation:cfa 1.8s ease-in forwards}
+@keyframes cfa{to{transform:translateY(105vh) rotate(540deg);opacity:.8}}
+@media(prefers-reduced-motion:reduce){#pop .pc{animation:none}.cf{display:none}}
+button[aria-label=Rules]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+</style>
+<script>
+(function(){
+const A=(k,s)=>`<svg viewBox="0 0 24 24" style="width:${s||52}px;height:${s||52}px">${k}</svg>`;
+const ART={
+a1:ICON.crown+'<path d="M4 4l16 16"/>',
+a2:'<path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/>',
+a3:'<path d="M5 3l3 3 4-5 4 5 3-3-1.5 8h-11zM12 14v7M9 18l3 3 3-3"/>',
+a4:ICON.medal+'<path d="M2 7h3M2 11h2"/>',
+a5:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 8.5h.01M15.5 8.5h.01M12 12h.01M8.5 15.5h.01M15.5 15.5h.01"/>',
+a6:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+a7:'<path d="M6 3h12M6 21h12M7 3v3a5 5 0 0 0 2 4l3 2-3 2a5 5 0 0 0-2 4v3M17 3v3a5 5 0 0 1-2 4l-3 2 3 2a5 5 0 0 1 2 4v3"/>',
+a8:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>',
+a9:'<path d="M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6"/>',
+b1:'<path d="M8 3h8l-1 7a3 3 0 0 1-6 0zM12 13v7M8 21h8"/>',
+b2:'<path d="M7 3v10M7 8h8a2 2 0 0 1 2 2v3H7M7 13v7M17 13v7"/>',
+b3:'<path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 1 2-2h12M9 7h6"/>',
+b4:'<path d="M12 21v-8M12 13c0-4-3-6-7-6 0 4 3 6 7 6zM12 15c0-3 2-5 6-5 0 3-2 5-6 5z"/>',
+b5:'<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>'};
+const seen=()=>{try{return JSON.parse(localStorage.getItem('bgl_seen_'+S.player))||[]}catch(e){return[]}};
+const mark=k=>{const a=seen();if(a.indexOf(k)<0){a.push(k);try{localStorage.setItem('bgl_seen_'+S.player,JSON.stringify(a))}catch(e){}}};
+const FIN=['Better luck next time. May the dice rolls be ever in your favour.','The dice gods were not kind this season. They\u2019ll be watching next time.','The dice have spoken, and they mumbled. Redemption awaits next season.','A noble season, a cruel set of dice. Roll again.','Fortune favours the bold, and you\u2019re getting bolder. See you next season.'];
+const TR=[['#b8962e','Champion of the league!','The dice gods bow to you.'],['#8d949b','Runner-up, and proud of it','So close to glory. The dice gods noticed.'],['#a8683b','On the podium!','Third place, well rolled.']];
+function confetti(){if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const c=['#b8962e','#8d949b','#a8683b','#2f5d50','#9c4a2f'];for(let i=0;i<28;i++){const e=document.createElement('i');e.className='cf';e.style.left=Math.random()*100+'vw';e.style.background=c[i%5];e.style.animationDelay=Math.random()*.5+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),2600)}}
+function pop(o){const p=document.createElement('div');p.id='pop';
+ p.innerHTML=`<div class="pc" role="dialog" aria-modal="true"><div class="bgd" style="${o.col?'color:'+o.col:''}">${o.art}</div><small>${o.kicker}</small><h2 style="font-size:20px;margin:4px 0 8px">${esc(o.title)}</h2><p style="margin:0 0 16px">${esc(o.msg)}</p><button class="b p w" id="popok">${o.btn||'Nice'}</button></div>`;
+ document.body.appendChild(p);if(o.conf)confetti();
+ $('#popok').onclick=()=>{p.remove();if(o.key)mark(o.key);fx()}}
+function showFin(){const f=S.d.fin;if(!f)return;const r=f.rank,t=TR[r-1];let h=0;for(const c of S.player)h+=c.charCodeAt(0);
+ pop(t?{art:A(ICON.board,56),col:t[0],kicker:'End of the league \u00b7 '+f.total+' points',title:t[1],msg:t[2]+' You finished '+ord(r-1)+'.',conf:1,btn:'Thanks'}
+ :{art:A(ICON.board,56),kicker:'End of the league \u00b7 '+f.total+' points',title:'That\u2019s a wrap on the league',msg:FIN[h%5]+' You finished '+ord(r-1)+'.',btn:'Thanks'})}
+window.showFin=showFin;
+const EMP={'No games yet.':'The board is set. Pieces are waiting.','No scores yet.':'The dice are still in the cup. Scores will land here.'};
+const RARE=['Spreadsheet gods appeased.','The dice gods approve.','History will remember this.'];
+function fx(){
+ document.querySelectorAll('p.mu').forEach(e=>{if(e.textContent.indexOf('XMG Partners')>=0)e.textContent=e.textContent.replace('XMG Partners','XMG Projects')});
+ document.querySelectorAll('.card.mu').forEach(e=>{const t=e.textContent.trim();if(EMP[t])e.textContent=EMP[t];else if(t.indexOf('No sessions yet.')===0)e.textContent='The table is empty. A host needs to create a session first.'});
+ if(!S.done)S.doneFx=0;else if(!S.doneFx&&/^Logged:/.test(S.done)){S.doneFx=1;const b=document.querySelector('.card.ok b');if(b&&Math.random()<.05)b.textContent=S.done+' '+RARE[Math.floor(Math.random()*3)]}
+ const d=S.d;if(!d||d.admin||!S.player||S.admin||S.rules||$('#pop'))return;
+ const sn=seen(),m=d.me;
+ if(d.finaleOn&&d.fin&&sn.indexOf('fin')<0){mark('fin');showFin();return}
+ for(const a of (d.ach||[])){const k='a:'+a.id+':'+a.n;if(sn.indexOf(k)<0){pop({key:k,art:A(ART[a.id]),kicker:'Secret achievement unlocked',title:a.title,msg:a.msg,conf:1,btn:'Nice'});return}}
+ if(m){const mxp=2*d.table[0].reduce((x,y)=>x+y,0)+2*Math.max(...d.table[0]);
+  if(m.total===100&&sn.indexOf('m100')<0){mark('m100');flash('Exactly 100 points. Nicely rolled.',4000);confetti()}
+  else if(m.playing===mxp&&sn.indexOf('mmax')<0){mark('mmax');flash('Perfect playing score. Chef\u2019s kiss.',4000);confetti()}}}
+function brV(){const d=S.d,a=d.ach||[];
+ return `<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.br=0;render()">\u2190 Back</button></div>
+ <div class="card" style="text-align:center"><h2 style="font-size:20px">The Backroom</h2><p class="mu" style="margin:0 0 12px">You weren\u2019t supposed to find this place.</p><div class="big">${a.length} / ??</div><small>secret achievements discovered</small></div>`+
+ a.map(x=>`<div class="card" style="display:flex;gap:12px;align-items:center"><div class="bgd" style="width:64px;height:64px;margin:0;flex:none">${A(ART[x.id],34)}</div><div style="min-width:0"><b>${esc(x.title)}</b>${x.n>1?' <span class="pill">\u00d7'+x.n+'</span>':''}<br><small>${esc(x.desc)}</small><br><small style="font-style:italic">${esc(x.msg)}</small></div></div>`).join('')+
+ `<div class="card mu" style="border-style:dashed;text-align:center">${svgS('lock',20)}<br>Some secrets are still hidden.</div>`+
+ (d.finaleOn&&d.fin?`<div class="card"><div class="row sp"><span>Season finale</span><button class="b s" onclick="showFin()">View again</button></div></div>`:'')}
+const R0=render;render=function(){if(S.br&&S.d&&S.code&&S.player&&!S.admin&&!S.rules){$('#app').innerHTML=hdr()+brV()+navHtml([['progress','Progress'],['log','Log'],['board','Leaderboard']],'','goT');fx();return}R0();fx()};
+const goT0=goT;goT=function(t){S.br=0;goT0(t)};
+const A0=aAwards;aAwards=function(){const on=S.d.finaleOn;
+ return det('fin',false,`<span><b>End of league</b></span><span class="pill ${on?'':'warn'}">${on?'Announced':'Not announced'}</span>`,`<p class="mu" style="margin-top:0">Shows every player a one-time pop-up with their final rank. The top 3 get a gold, silver or bronze trophy. Reveal accolades first if you want them counted in the final ranks.</p>`+(on?`<button class="b w" onclick="finale(false)">Hide announcement</button>`:`<button class="b danger w" onclick="finale(true)">Announce end of league</button>`))+A0()};
+window.finale=on=>{if(confirm(on?'Announce the end of the league to all players now?':'Hide the announcement again?'))act('setFinale',{on:on})};
+let t=0,lp=0;const isB=e=>e.target.closest&&e.target.closest('button[aria-label="Rules"]');
+document.addEventListener('pointerdown',e=>{lp=0;clearTimeout(t);if(!isB(e))return;t=setTimeout(()=>{lp=1;if(navigator.vibrate)navigator.vibrate(30);S.br=1;S.rules=false;S.admin=false;render();scrollTo(0,0)},650)});
+['pointerup','pointercancel'].forEach(v=>document.addEventListener(v,()=>clearTimeout(t)));
+document.addEventListener('contextmenu',e=>{if(isB(e))e.preventDefault()});
+document.addEventListener('click',e=>{if(lp&&isB(e)){e.stopImmediatePropagation();e.preventDefault();lp=0;return}if(S.br&&e.target.closest('header button'))S.br=0},true);
+fx();
+})();
+</script>
+</body></html>
