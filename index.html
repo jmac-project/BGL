@@ -465,7 +465,7 @@ async function saveEdit(){
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.code&&S.d&&!S.busy&&Date.now()-S.d._t>30000)load()});
 applyPrefs();render();load();
 </script>
-<!-- BGL v8 add-on. Paste this whole block after the main script has closed and before the closing body tag. Never inside the existing script.
+<!-- BGL v8.6 add-on (replaces the earlier v8 add-on block entirely: delete the old block from its first comment line to its closing script tag, then paste this in the same place). Paste this whole block after the main script has closed and before the closing body tag. Never inside the existing script.
      It only adds code and cannot stop the app from loading: if anything in it fails, the app carries on as before.
      Also put backroom.jpg in the same folder as index.html. -->
 <style>
@@ -488,6 +488,10 @@ button[aria-label=Admin]{display:none}[data-rank],h1 img{cursor:pointer}.pl.sm b
 .bg3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .bt{background:none;border:0;padding:6px 2px;text-align:center;color:var(--tx);font-size:12px;line-height:1.25;min-height:0}
 .bt.lk .bgd{background:none;border:2px dashed var(--bd);color:var(--mu)}.bt.lk{color:var(--mu)}.gr{opacity:.45}
+.bt .cw{display:block;position:relative;width:60px;height:60px;margin:0 auto 4px}.bt .cw .bgd.sm{margin:0}
+.bt .bd{position:absolute;top:-4px;right:-8px;background:var(--ac2);color:var(--ac);font-size:11px;font-weight:600;line-height:17px;padding:0 6px;border-radius:10px;border:2px solid var(--card);box-sizing:content-box}
+.bt .lb{display:flex;align-items:flex-start;justify-content:center;min-height:2.5em}
+#dice{overflow-y:auto}.d20r{margin-top:14px;text-align:center;color:#cdbfa6;font-size:12px}.d20r div{width:96px;margin:6px auto 0;padding:4px 0;border-radius:10px;border:1px solid #3a2e24;font-size:15px;font-weight:700;color:#cdbfa6}.d20r div.n{border-color:#e8b04a;color:#ffd27a}
 </style>
 <script>
 try{(function(){
@@ -503,15 +507,15 @@ a7:'<path d="M6 3h12M6 21h12M7 3v3a5 5 0 0 0 2 4l3 2-3 2a5 5 0 0 0-2 4v3M17 3v3a
 a8:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>',
 a9:'<path d="M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6"/>',
 a10:'<circle cx="12" cy="12" r="9"/><path d="M10 9l2-2v10"/>',
-a11:'<path d="M15 3l-6 10M7 13l-3 8 9-2 3-8zM8 17l2 .5"/>',
-a12:`<g transform="translate(12 9.5) scale(.85) translate(-12 -12)">${[0,90,180,270].map(r=>`<path transform="rotate(${r} 12 12)" d="M12 11.5C10 10 8 8.5 8 6.5a2.2 2.2 0 0 1 4-1.3 2.2 2.2 0 0 1 4 1.3c0 2-2 3.5-4 5z"/>`).join('')}</g><path d="M12 15.5v6"/>`,
+a11:'<path d="M20 3.5l-8 8"/><path d="M10.5 10l3.5 3.5c1.2 2 1.7 4.5 1.7 7.5H6c0-3 1-6 4.5-11z"/><path d="M9.5 15.5l-.7 5.5M12.5 16.5l-.2 4.5"/>',
+a12:`${[0,90,180,270].map(r=>`<path transform="rotate(${r} 12 12)" d="M12 12C9.6 10.2 7 9 7 6.6A2.6 2.6 0 0 1 12 5.6 2.6 2.6 0 0 1 17 6.6C17 9 14.4 10.2 12 12z"/>`).join('')}`,
 a13:'<path d="M2 9l10-5 10 5-10 5zM6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5M22 9v6"/>',
 a15:'<path d="M10 4a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0zM12 9v7"/>',
 a16:'<path d="M12 3l9 5-9 5-9-5zM3 12l9 5 9-5M3 16l9 5 9-5"/>',
 c1:'<path d="M4 12a8 8 0 1 0 3-6M4 4v4h4"/>',
 c2:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>',
 a17:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
-a18:'<path d="M7 3v9a5 5 0 0 0 10 0V3M7 6h2M15 6h2M7 9.5h2M15 9.5h2"/>',
+a18:'<path d="M6 20h12"/><path d="M8 20c0-3.5 1.2-5.5 3.2-7.5-2 .2-3.7 1.2-4.7 2.5L5 13c-.3-2 1-3.5 2.5-5L10 5l1-2.5 2 1.5c3 .8 5.5 3.5 5.5 7.5V20"/><path d="M13.5 7.5h.01"/>',
 a19:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
 a20:'<path d="M12 8v11M12 11C9 4 3 5 4 10c1 4 6 3 8 1M12 11c3-7 9-6 8-1-1 4-6 3-8 1M12 15c-3-1-6 1-5 4 2 1 4 0 5-2M12 15c3-1 6 1 5 4-2 1-4 0-5-2"/>',
 a21:'<path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"/>',
@@ -528,11 +532,12 @@ const locGet=()=>{try{return JSON.parse(localStorage.getItem(lk()))||[]}catch(e)
 const isSeen=k=>LOC.has(kk(k))||((S.d&&S.d.seen)||[]).indexOf(k)>=0||(oldSrv()&&locGet().indexOf(k)>=0);
 const markSeen=k=>{LOC.add(kk(k));if(oldSrv()){const a=locGet();a.push(k);try{localStorage.setItem(lk(),JSON.stringify(a))}catch(e){}}try{api('ack',{keys:[k]}).catch(()=>{})}catch(e){}};
 const fl=()=>localStorage.getItem('bgl_fl')!=='off';
+const SND=()=>localStorage.getItem('bgl_snd')!=='off';
 const FIN=['Better luck next time. May the dice rolls be ever in your favour.','The dice gods were not kind this season. They\u2019ll be watching next time.','The dice have spoken, and they mumbled. Redemption awaits next season.','A noble season, a cruel set of dice. Roll again.','Fortune favours the bold, and you\u2019re getting bolder. See you next season.'];
 const TR=[['#b8962e','Champion of the league!','The dice gods bow to you.'],['#8d949b','Runner-up, and proud of it','So close to glory. The dice gods noticed.'],['#a8683b','On the podium!','Third place, well rolled.']];
 function confetti(){if(!fl()||matchMedia('(prefers-reduced-motion:reduce)').matches)return;const c=['#b8962e','#8d949b','#a8683b','#2f5d50','#9c4a2f'];for(let i=0;i<28;i++){const e=document.createElement('i');e.className='cf';e.style.left=Math.random()*100+'vw';e.style.background=c[i%5];e.style.animationDelay=Math.random()*.5+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),2600)}}
 function pop(o){const p=document.createElement('div');p.id='pop';
- p.innerHTML=`<div class="pc" role="dialog" aria-modal="true"><div class="bgd" style="${o.col?'color:'+o.col:''}">${o.art}</div><small>${o.kicker}</small><h2 style="font-size:20px;margin:4px 0 8px">${esc(o.title)}</h2>${o.sub?`<p class="mu" style="margin:0 0 8px;font-size:14px">${esc(o.sub)}</p>`:''}<p style="margin:0 0 ${o.extra?8:16}px">${esc(o.msg)}</p>${o.extra?`<p class="mu" style="margin:0 0 14px;font-size:13px">${esc(o.extra)}</p>`:''}<button class="b p w" id="popok">${o.btn||'Nice'}</button></div>`;
+ p.innerHTML=`<div class="pc" role="dialog" aria-modal="true"><div class="bgd" style="${o.col?'color:'+o.col:''}">${o.art}</div><small>${o.kicker}</small><h2 style="font-size:20px;margin:4px 0 8px">${esc(o.title)}</h2>${o.sub?`<p class="mu" style="margin:0 0 8px;font-size:14px">${esc(o.sub)}</p>`:''}<p style="margin:0 0 ${o.extra||o.raw?8:16}px">${esc(o.msg)}</p>${o.extra?`<p class="mu" style="margin:0 0 14px;font-size:13px">${esc(o.extra)}</p>`:''}${o.raw?`<div style="margin:0 0 14px;font-size:13px">${o.raw}</div>`:''}<button class="b p w" id="popok">${o.btn||'Nice'}</button></div>`;
  document.body.appendChild(p);if(o.conf)confetti();
  $('#popok').onclick=()=>{p.remove();fx()}}
 function showFin(){const f=S.d.fin;if(!f)return;const r=f.rank,t=TR[r-1];let h=0;for(const c of S.player)h+=c.charCodeAt(0);
@@ -549,6 +554,7 @@ function gapLine(){
  const p=document.createElement('p');p.className='mu';p.dataset.gap='1';p.style.cssText='margin:10px 0 0;text-align:center';
  p.textContent=g+' point'+(g>1?'s':'')+' behind '+ord(m.rank-2)+' place';st.insertAdjacentElement('afterend',p)}
 function fx(){
+ try{if(S.tab==='progress')document.querySelectorAll('#app .card,#app p,#app .note,#app .banner,#app .mu').forEach(e=>{if(e.isConnected&&/^\s*Still to play/i.test(e.textContent)&&e.textContent.length<400)e.remove()})}catch(e){}
  document.querySelectorAll('p.mu').forEach(e=>{if(e.textContent.indexOf('XMG Partners')>=0)e.textContent=e.textContent.replace('XMG Partners','XMG Projects')});
  document.querySelectorAll('.card.mu').forEach(e=>{const t=e.textContent.trim();if(EMP[t])e.textContent=EMP[t];else if(t.indexOf('No sessions yet.')===0)e.textContent='The table is empty. A host needs to create a session first.'});
  gapLine();
@@ -569,19 +575,21 @@ function fx(){
 const BV=()=>localStorage.getItem('bgl_bv')||'grid';
 window.setBV=v=>{localStorage.setItem('bgl_bv',v);render()};
 window.brOpen=id=>{const d=S.d,x=(d.ach||[]).find(a=>a.id===id),c=(d.achCat||[]).find(a=>a.id===id),y=x||c;if(!y)return;
- pop({art:art(id),kicker:x?'Unlocked'+(x.n>1?' \u00b7 earned \u00d7'+x.n:''):'Not unlocked yet',title:y.title,sub:y.desc,msg:y.msg,extra:c?(c.who&&c.who.length?'Earned by: '+c.who.map(w=>w.name+(w.n>1?' \u00d7'+w.n:'')).join(', '):'Not earned by anyone yet'):'',btn:'Close'})};
+ let raw='',n=0;if(c){n=c.by||0;raw=(n?`<button class="link" id="pwho" style="padding:2px 0;min-height:0;font-size:13px">Earned by ${n} player${n===1?'':'s'} \u25be</button><div id="pwl" style="display:none"><small>${(c.who||[]).map(w=>esc(w.name)+(w.n>1?' \u00d7'+w.n:'')).join(', ')}</small></div>`:'<small>Not earned by anyone yet</small>')+(c.need>1?`<div><small>Shown to players after ${c.need} times</small></div>`:'')}
+ pop({art:art(id),kicker:x?'Unlocked'+(x.n>1?' \u00b7 earned \u00d7'+x.n:''):'Not unlocked yet',title:y.title,sub:y.desc,msg:y.msg,raw:raw,btn:'Close'});
+ const b=$('#pwho');if(b)b.onclick=()=>{const l=$('#pwl'),o=l.style.display==='none';l.style.display=o?'block':'none';b.textContent='Earned by '+n+' player'+(n===1?'':'s')+(o?' \u25b4':' \u25be')}};
 window.brMore=()=>{S.brm=!S.brm;render()};
 window.brWho=id=>{S.brw=S.brw===id?'':id;render()};
 function brV(){
  const d=S.d,got=d.ach||[],cat=d.achCat,total=d.achTotal||got.length,left=Math.max(0,total-got.length),gotIds=new Set(got.map(x=>x.id)),v=BV();
  const lockedCat=cat?cat.filter(c=>!gotIds.has(c.id)):[];
- const whoH=id=>{const c=cat.find(z=>z.id===id)||{by:0,who:[],need:1},n=c.by;return `<br><button class="link" style="padding:2px 0;min-height:0;font-size:13px" onclick="brWho('${id}')">Earned by ${n} player${n===1?'':'s'}${n?(S.brw===id?' \u25b4':' \u25be'):''}</button>`+(S.brw===id&&n?`<div><small>${c.who.map(w=>esc(w.name)+(w.n>1?' \u00d7'+w.n:'')).join(', ')}</small></div>`:'')+(c.need>1?`<small>Shown to players after ${c.need} times</small>`:'')};
+ const whoH=id=>{const c=cat.find(z=>z.id===id)||{by:0,who:[],need:1},n=c.by;return `<br><button class="link" style="padding:2px 0;min-height:0;font-size:13px" onclick="brWho('${id}')">Earned by ${n} player${n===1?'':'s'}${n?(S.brw===id?' \u25b4':' \u25be'):''}</button>`+(S.brw===id&&n?`<div><small>${c.who.map(w=>esc(w.name)+(w.n>1?' \u00d7'+w.n:'')).join(', ')}</small></div>`:'')+(c.need>1?`<div><small>Shown to players after ${c.need} times</small></div>`:'')};
  let h=`<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.br=0;render()">\u2190 Back</button></div>
  <div class="brh"><img src="backroom.jpg" alt="A hooded figure with glowing eyes holds a glowing twenty-sided die over a map in a candlelit room" onerror="this.style.display='none'"><div class="in"><h2 style="margin:0 0 4px;font-size:22px;color:#e8b04a">Welcome, challenger.</h2><p style="margin:0 0 12px;color:#cdbfa6">You weren\u2019t supposed to find this place.</p><div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #3a2e24;padding-top:10px"><span style="color:#cdbfa6;font-size:14px">Secrets discovered</span><b style="color:#e8b04a;font-size:18px">${got.length} / ${total}</b></div></div></div>
  <div class="pl"><button class="${v==='list'?'on':''}" onclick="setBV('list')">List</button><button class="${v==='grid'?'on':''}" onclick="setBV('grid')">Grid</button></div>`;
  if(v==='grid'){
-  h+='<div class="card"><div class="bg3">'+got.map(x=>`<button class="bt" onclick="brOpen('${x.id}')"><div class="bgd sm">${art(x.id,30)}</div>${esc(x.title)}${x.n>1?'<br><span class="pill">\u00d7'+x.n+'</span>':''}</button>`).join('')+
-   (cat?lockedCat.map(x=>`<button class="bt gr" onclick="brOpen('${x.id}')"><div class="bgd sm">${art(x.id,30)}</div>${esc(x.title)}</button>`).join(''):Array.from({length:left},()=>`<div class="bt lk"><div class="bgd sm">${A(ICON.lock,26)}</div>Locked</div>`).join(''))+'</div></div>'}
+  h+='<div class="card"><div class="bg3">'+got.map(x=>`<button class="bt" onclick="brOpen('${x.id}')"><span class="cw"><div class="bgd sm">${art(x.id,30)}</div>${x.n>1?'<span class="bd">\u00d7'+x.n+'</span>':''}</span><span class="lb">${esc(x.title)}</span></button>`).join('')+
+   (cat?lockedCat.map(x=>`<button class="bt gr" onclick="brOpen('${x.id}')"><span class="cw"><div class="bgd sm">${art(x.id,30)}</div></span><span class="lb">${esc(x.title)}</span></button>`).join(''):Array.from({length:left},()=>`<div class="bt lk"><span class="cw"><div class="bgd sm">${A(ICON.lock,26)}</div></span><span class="lb">Locked</span></div>`).join(''))+'</div></div>'}
  else{
   h+=got.map(x=>`<div class="card" style="display:flex;gap:12px;align-items:center"><div class="bgd" style="width:64px;height:64px;margin:0;flex:none">${art(x.id,34)}</div><div style="min-width:0"><b>${esc(x.title)}</b>${x.n>1?' <span class="pill">\u00d7'+x.n+'</span>':''}<br><small>${esc(x.desc)}</small><br><small style="font-style:italic">${esc(x.msg)}</small>${cat?whoH(x.id):''}</div></div>`).join('')||'<div class="card mu">Nothing discovered yet. Keep playing.</div>';
   if(cat)h+=lockedCat.map(x=>`<div class="card gr" style="display:flex;gap:12px;align-items:center"><div class="bgd" style="width:64px;height:64px;margin:0;flex:none">${art(x.id,34)}</div><div style="min-width:0"><b>${esc(x.title)}</b> <span class="pill warn">Locked</span><br><small>${esc(x.desc)}</small><br><small style="font-style:italic">${esc(x.msg)}</small>${whoH(x.id)}</div></div>`).join('');
@@ -597,20 +605,25 @@ prefV=function(){const th=localStorage.getItem('bgl_th')||'system',ac=localStora
  const mode=`<span class="pl sm" style="margin:0">${[['light','Light'],['dark','Dark'],['system','System']].map(x=>`<button class="${th===x[0]?'on':''}" onclick="setPref('bgl_th','${x[0]}')">${x[1]}</button>`).join('')}</span>`;
  const sws=[['sage','Sage','#2f5d50'],['blue','Cornflower','#35618f'],['terracotta','Terracotta','#9c4a2f'],['plum','Plum','#6a4c7d']].map(x=>`<button aria-label="${x[1]}" aria-pressed="${ac===x[0]}" style="width:28px;height:28px;min-height:28px;border-radius:50%;border:2px solid var(--card);background:${x[2]};padding:0;${ac===x[0]?'box-shadow:0 0 0 2px var(--tx)':''}" onclick="setPref('bgl_ac','${x[0]}')"></button>`).join('');
  return `<div class="card" style="padding:10px 14px 2px"><small style="letter-spacing:.08em;text-transform:uppercase">Appearance</small>`+
-  prow('Mode',mode)+prow('Accent colour',`<span class="row" style="gap:10px;flex-wrap:nowrap">${sws}</span>`)+prow('Flourish',sw(fl(),`setFl('${fl()?'off':'on'}')`),1)+`</div>`+
+  prow('Mode',mode)+prow('Accent colour',`<span class="row" style="gap:10px;flex-wrap:nowrap">${sws}</span>`)+prow('Flourish',sw(fl(),`setFl('${fl()?'off':'on'}')`))+prow('Sound',sw(SND(),`setSnd('${SND()?'off':'on'}')`),1)+`</div>`+
   (S.player?`<div class="card"><h2>Player</h2><p style="margin:0 0 10px">Playing as <b>${esc(S.player)}</b></p><button class="b w" onclick="S.player='';localStorage.removeItem('bgl_p');S.rules=false;render()">Change player</button></div>`:'')};
 window.setFl=v=>{localStorage.setItem('bgl_fl',v);render()};
+window.setSnd=v=>{localStorage.setItem('bgl_snd',v);render()};
 window.adminOut=()=>{S.pass='';sessionStorage.removeItem('bgl_a');S.admin=false;S.br=0;load()};
 /* ---------- d20: tap the BGL icon ---------- */
-const D20='<svg id="d20" viewBox="0 0 100 100" style="width:210px;height:210px;cursor:pointer;overflow:visible"><g id="d20g"><polygon points="50,6 88,28 88,72 50,94 12,72 12,28" fill="#2a2119" stroke="#e8b04a" stroke-width="2.5" stroke-linejoin="round"/><polygon points="50,22 78,68 22,68" fill="none" stroke="#e8b04a" stroke-width="2" stroke-linejoin="round"/><path d="M50 22V6M50 22L12 28M50 22L88 28M22 68L12 28M22 68L12 72M22 68L50 94M78 68L88 28M78 68L88 72M78 68L50 94" stroke="#e8b04a" stroke-width="1.5" fill="none" opacity=".7"/></g><text id="d20n" x="50" y="58" text-anchor="middle" font-size="24" font-weight="700" fill="#ffd27a" stroke="none" font-family="system-ui,sans-serif">20</text></svg>';
+const D20='<svg id="d20" viewBox="0 0 100 100" style="width:260px;height:260px;cursor:pointer;overflow:visible"><g id="d20g"><polygon points="50,6 88,28 88,72 50,94 12,72 12,28" fill="#2a2119" stroke="#e8b04a" stroke-width="2.5" stroke-linejoin="round"/><polygon points="50,14 84,74 16,74" fill="none" stroke="#e8b04a" stroke-width="2" stroke-linejoin="round"/><path d="M50 14V6M50 14L12 28M50 14L88 28M16 74L12 28M16 74L12 72M16 74L50 94M84 74L88 28M84 74L88 72M84 74L50 94" stroke="#e8b04a" stroke-width="1.5" fill="none" opacity=".7"/></g><text id="d20n" x="50" y="62" text-anchor="middle" font-size="24" font-weight="700" fill="#ffd27a" stroke="none" font-family="system-ui,sans-serif">20</text></svg>';
+let AC=null;const RH=[];
+const vib=p=>{try{if(navigator.vibrate&&!matchMedia('(prefers-reduced-motion:reduce)').matches)navigator.vibrate(p)}catch(e){}};
+const tk=(f,t,v)=>{if(!SND())return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;g.gain.setValueAtTime(v,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+t);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+t)}catch(e){}};
+const rhH=()=>RH.length?'Recent rolls'+RH.map((v,i)=>`<div${i?'':' class="n"'}>${v}</div>`).join(''):'';
 const rnd=()=>{const a=new Uint32Array(1);do{crypto.getRandomValues(a)}while(a[0]>=4294967280);return a[0]%20+1};
-function d20(){if($('#dice'))return;const o=document.createElement('div');o.id='dice';o.innerHTML=D20+'<p id="d20h" style="margin:14px 0 0;font-size:14px;color:#cdbfa6">Tap the die to roll</p>';document.body.appendChild(o);
- let busy=0,iv=0,to=0;const close=()=>{clearInterval(iv);clearTimeout(to);o.remove()};
+function d20(){if($('#dice'))return;const o=document.createElement('div');o.id='dice';o.innerHTML=D20+'<p id="d20h" style="margin:14px 0 0;font-size:14px;color:#cdbfa6">Tap the die to roll</p><div class="d20r" id="d20r">'+rhH()+'</div>';document.body.appendChild(o);
+ let busy=0,iv=0,to=0,k=0;const close=()=>{clearInterval(iv);clearTimeout(to);o.remove()};
  o.addEventListener('click',e=>{if(!e.target.closest('#d20')){close();return}if(busy)return;busy=1;
   const g=$('#d20g'),n=$('#d20n'),h=$('#d20h'),rr=matchMedia('(prefers-reduced-motion:reduce)').matches;
-  h.textContent='Rolling...';n.setAttribute('opacity','.6');g.classList.remove('dr');void g.getBoundingClientRect();g.classList.add('dr');
-  iv=setInterval(()=>{n.textContent=rnd()},70);
-  to=setTimeout(()=>{clearInterval(iv);const r=rnd();n.textContent=r;n.setAttribute('opacity','1');busy=0;h.textContent=r===20?'Natural 20!':r===1?'Critical fail...':'Tap the die to roll again';if(r===20)confetti()},rr?200:1300)})}
+  h.textContent='Rolling...';n.setAttribute('opacity','.6');vib(10);tk(300,.05,.08);g.classList.remove('dr');void g.getBoundingClientRect();g.classList.add('dr');
+  iv=setInterval(()=>{n.textContent=rnd();tk(500,.03,.04);if(k++%2===0)vib(8)},70);
+  to=setTimeout(()=>{clearInterval(iv);const r=rnd();n.textContent=r;n.setAttribute('opacity','1');busy=0;vib(40);tk(160,.15,.15);RH.unshift(r);if(RH.length>5)RH.length=5;const rl=$('#d20r');if(rl)rl.innerHTML=rhH();h.textContent=r===20?'Natural 20!':r===1?'Critical fail...':'Tap the die to roll again';if(r===20)confetti()},rr?200:1300)})}
 const AV0=adminV;adminV=function(){return '<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.admin=false;S.edit=null;render();scrollTo(0,0)">\u2190 Back to app</button></div>'+AV0()};
 /* ---------- Admin: finale + replay ---------- */
 const A0=aAwards;aAwards=function(){const on=S.d.finaleOn;
