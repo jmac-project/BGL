@@ -477,8 +477,11 @@ applyPrefs();render();load();
 .cf{position:fixed;top:-12px;width:8px;height:12px;z-index:30;pointer-events:none;animation:cfa 1.8s ease-in forwards}
 @keyframes cfa{to{transform:translateY(105vh) rotate(540deg);opacity:.8}}
 @media(prefers-reduced-motion:reduce){#pop .pc{animation:none}.cf{display:none}}
-button[aria-label=Rules],[data-adm]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
-button[aria-label=Admin]{display:none}[data-rank]{cursor:pointer}
+button[aria-label=Rules]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+button[aria-label=Admin]{display:none}[data-rank],h1 img{cursor:pointer}.pl.sm button{padding:0 11px}
+#dice{position:fixed;inset:0;background:rgba(0,0,0,.68);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:25}
+#d20g{transform-origin:50px 50px}.dr{animation:dr 1.3s cubic-bezier(.2,.7,.3,1)}@keyframes dr{0%{transform:rotate(0) scale(1)}40%{transform:rotate(300deg) scale(1.12)}100%{transform:rotate(720deg) scale(1)}}
+@media(prefers-reduced-motion:reduce){.dr{animation:none}}
 .sw{width:46px;height:28px;min-height:28px;border-radius:14px;border:0;background:var(--bd);position:relative;padding:0;flex:none}.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--card);transition:left .15s}.sw.on{background:var(--ac)}.sw.on::after{left:21px}.sw:disabled{opacity:.4}
 .brh{background:#1b1511;border-radius:12px;overflow:hidden;margin-bottom:12px;color:#f0e6d2}
 .brh img{display:block;width:100%;height:auto}.brh .in{padding:14px 18px 16px}
@@ -501,12 +504,18 @@ a8:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>',
 a9:'<path d="M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6"/>',
 a10:'<circle cx="12" cy="12" r="9"/><path d="M10 9l2-2v10"/>',
 a11:'<path d="M15 3l-6 10M7 13l-3 8 9-2 3-8zM8 17l2 .5"/>',
-a12:'<circle cx="9" cy="9" r="3"/><circle cx="15" cy="9" r="3"/><circle cx="9" cy="15" r="3"/><circle cx="15" cy="15" r="3"/><path d="M12 12l4 9"/>',
+a12:`<g transform="translate(12 9.5) scale(.85) translate(-12 -12)">${[0,90,180,270].map(r=>`<path transform="rotate(${r} 12 12)" d="M12 11.5C10 10 8 8.5 8 6.5a2.2 2.2 0 0 1 4-1.3 2.2 2.2 0 0 1 4 1.3c0 2-2 3.5-4 5z"/>`).join('')}</g><path d="M12 15.5v6"/>`,
 a13:'<path d="M2 9l10-5 10 5-10 5zM6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5M22 9v6"/>',
 a15:'<path d="M10 4a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0zM12 9v7"/>',
 a16:'<path d="M12 3l9 5-9 5-9-5zM3 12l9 5 9-5M3 16l9 5 9-5"/>',
 c1:'<path d="M4 12a8 8 0 1 0 3-6M4 4v4h4"/>',
 c2:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>',
+a17:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+a18:'<path d="M7 3v9a5 5 0 0 0 10 0V3M7 6h2M15 6h2M7 9.5h2M15 9.5h2"/>',
+a19:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+a20:'<path d="M12 8v11M12 11C9 4 3 5 4 10c1 4 6 3 8 1M12 11c3-7 9-6 8-1-1 4-6 3-8 1M12 15c-3-1-6 1-5 4 2 1 4 0 5-2M12 15c3-1 6 1 5 4-2 1-4 0-5-2"/>',
+a21:'<path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"/>',
+a22:'<path d="M5 3v7a2 2 0 0 0 4 0V3M7 3v18M17 3c-2 2-3 5-3 8h3v10M17 3v8"/>',
 b1:'<path d="M8 3h8l-1 7a3 3 0 0 1-6 0zM12 13v7M8 21h8"/>',
 b2:'<path d="M7 3v10M7 8h8a2 2 0 0 1 2 2v3H7M7 13v7M17 13v7"/>',
 b3:'<path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 1 2-2h12M9 7h6"/>',
@@ -523,7 +532,7 @@ const FIN=['Better luck next time. May the dice rolls be ever in your favour.','
 const TR=[['#b8962e','Champion of the league!','The dice gods bow to you.'],['#8d949b','Runner-up, and proud of it','So close to glory. The dice gods noticed.'],['#a8683b','On the podium!','Third place, well rolled.']];
 function confetti(){if(!fl()||matchMedia('(prefers-reduced-motion:reduce)').matches)return;const c=['#b8962e','#8d949b','#a8683b','#2f5d50','#9c4a2f'];for(let i=0;i<28;i++){const e=document.createElement('i');e.className='cf';e.style.left=Math.random()*100+'vw';e.style.background=c[i%5];e.style.animationDelay=Math.random()*.5+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),2600)}}
 function pop(o){const p=document.createElement('div');p.id='pop';
- p.innerHTML=`<div class="pc" role="dialog" aria-modal="true"><div class="bgd" style="${o.col?'color:'+o.col:''}">${o.art}</div><small>${o.kicker}</small><h2 style="font-size:20px;margin:4px 0 8px">${esc(o.title)}</h2>${o.sub?`<p class="mu" style="margin:0 0 8px;font-size:14px">${esc(o.sub)}</p>`:''}<p style="margin:0 0 16px">${esc(o.msg)}</p><button class="b p w" id="popok">${o.btn||'Nice'}</button></div>`;
+ p.innerHTML=`<div class="pc" role="dialog" aria-modal="true"><div class="bgd" style="${o.col?'color:'+o.col:''}">${o.art}</div><small>${o.kicker}</small><h2 style="font-size:20px;margin:4px 0 8px">${esc(o.title)}</h2>${o.sub?`<p class="mu" style="margin:0 0 8px;font-size:14px">${esc(o.sub)}</p>`:''}<p style="margin:0 0 ${o.extra?8:16}px">${esc(o.msg)}</p>${o.extra?`<p class="mu" style="margin:0 0 14px;font-size:13px">${esc(o.extra)}</p>`:''}<button class="b p w" id="popok">${o.btn||'Nice'}</button></div>`;
  document.body.appendChild(p);if(o.conf)confetti();
  $('#popok').onclick=()=>{p.remove();fx()}}
 function showFin(){const f=S.d.fin;if(!f)return;const r=f.rank,t=TR[r-1];let h=0;for(const c of S.player)h+=c.charCodeAt(0);
@@ -533,7 +542,7 @@ window.showFin=showFin;
 const EMP={'No games yet.':'The board is set. Pieces are waiting.','No scores yet.':'The dice are still in the cup. Scores will land here.'};
 const RARE=['Spreadsheet gods appeased.','The dice gods approve.','History will remember this.'];
 function gapLine(){
- const d=S.d,m=d&&d.me;if(S.tab!=='progress'||!m||d.admin)return;const st=document.querySelector('#app .stats');if(!st)return;
+ const d=S.d,m=d&&d.me;if(S.tab!=='progress'||!m)return;const st=document.querySelector('#app .stats');if(!st)return;
  const bigs=st.querySelectorAll('.big');if(bigs[1]&&bigs[1].parentNode)bigs[1].parentNode.dataset.rank='1';
  if(st.parentNode.querySelector('[data-gap]')||m.rank<2||m.rank>3)return;
  const t=(d.top3||[]).find(x=>x.rank===m.rank-1);if(!t)return;const g=t.total-m.total;if(g<=0)return;
@@ -543,11 +552,13 @@ function fx(){
  document.querySelectorAll('p.mu').forEach(e=>{if(e.textContent.indexOf('XMG Partners')>=0)e.textContent=e.textContent.replace('XMG Partners','XMG Projects')});
  document.querySelectorAll('.card.mu').forEach(e=>{const t=e.textContent.trim();if(EMP[t])e.textContent=EMP[t];else if(t.indexOf('No sessions yet.')===0)e.textContent='The table is empty. A host needs to create a session first.'});
  gapLine();
- document.querySelectorAll('.seg button').forEach(b=>{if(b.textContent.trim()==='Preferences')b.dataset.adm='1'});
+
+ const lkb=document.querySelector('header button[aria-label="Admin"]'),qbt=document.querySelector('header button[aria-label="Rules"]');
+ if(lkb&&S.d&&S.d.admin){lkb.classList.add('lkon');lkb.setAttribute('onclick','adminOut()');lkb.setAttribute('aria-label','Sign out of admin');if(qbt)qbt.parentNode.insertBefore(lkb,qbt)}
  document.querySelectorAll('p.mu').forEach(e=>{if(e.textContent.indexOf('lock icon')>=0)e.textContent='Use Back to return to the app.'});
  if(S.d&&S.d.admin&&!S.d.ver&&!S.verWarn){S.verWarn=1;flash('The server (Code.gs) is out of date. Deploy the latest version.',7000)}
  if(!S.done)S.doneFx=0;else if(!S.doneFx&&/^Logged:/.test(S.done)){S.doneFx=1;const b=document.querySelector('.card.ok b');if(b&&Math.random()<.05)b.textContent=S.done+' '+RARE[Math.floor(Math.random()*3)]}
- const d=S.d;if(!d||d.admin||!S.player||S.admin||S.rules||$('#pop'))return;
+ const d=S.d;if(!d||d.admin||!S.player||S.admin||S.rules||$('#pop')||$('#dice'))return;
  const m=d.me;
  if(d.finaleOn&&d.fin&&!isSeen('fin')){markSeen('fin');showFin();return}
  for(const a of (d.ach||[])){const k='a:'+a.id;if(!isSeen(k)){markSeen(k);pop({art:art(a.id),kicker:'Secret achievement unlocked',title:a.title,msg:a.msg,conf:1,btn:'Nice'});return}}
@@ -558,38 +569,48 @@ function fx(){
 const BV=()=>localStorage.getItem('bgl_bv')||'grid';
 window.setBV=v=>{localStorage.setItem('bgl_bv',v);render()};
 window.brOpen=id=>{const d=S.d,x=(d.ach||[]).find(a=>a.id===id),c=(d.achCat||[]).find(a=>a.id===id),y=x||c;if(!y)return;
- pop({art:art(id),kicker:x?'Unlocked'+(x.n>1?' \u00b7 earned \u00d7'+x.n:''):'Not unlocked yet',title:y.title,sub:y.desc,msg:y.msg,btn:'Close'})};
+ pop({art:art(id),kicker:x?'Unlocked'+(x.n>1?' \u00b7 earned \u00d7'+x.n:''):'Not unlocked yet',title:y.title,sub:y.desc,msg:y.msg,extra:c?(c.who&&c.who.length?'Earned by: '+c.who.map(w=>w.name+(w.n>1?' \u00d7'+w.n:'')).join(', '):'Not earned by anyone yet'):'',btn:'Close'})};
 window.brMore=()=>{S.brm=!S.brm;render()};
+window.brWho=id=>{S.brw=S.brw===id?'':id;render()};
 function brV(){
  const d=S.d,got=d.ach||[],cat=d.achCat,total=d.achTotal||got.length,left=Math.max(0,total-got.length),gotIds=new Set(got.map(x=>x.id)),v=BV();
- const lockedCat=cat?cat.filter(c=>!gotIds.has(c.id)):[],by=id=>cat?((cat.find(c=>c.id===id)||{}).by||0):0;
+ const lockedCat=cat?cat.filter(c=>!gotIds.has(c.id)):[];
+ const whoH=id=>{const c=cat.find(z=>z.id===id)||{by:0,who:[],need:1},n=c.by;return `<br><button class="link" style="padding:2px 0;min-height:0;font-size:13px" onclick="brWho('${id}')">Earned by ${n} player${n===1?'':'s'}${n?(S.brw===id?' \u25b4':' \u25be'):''}</button>`+(S.brw===id&&n?`<div><small>${c.who.map(w=>esc(w.name)+(w.n>1?' \u00d7'+w.n:'')).join(', ')}</small></div>`:'')+(c.need>1?`<small>Shown to players after ${c.need} times</small>`:'')};
  let h=`<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.br=0;render()">\u2190 Back</button></div>
  <div class="brh"><img src="backroom.jpg" alt="A hooded figure with glowing eyes holds a glowing twenty-sided die over a map in a candlelit room" onerror="this.style.display='none'"><div class="in"><h2 style="margin:0 0 4px;font-size:22px;color:#e8b04a">Welcome, challenger.</h2><p style="margin:0 0 12px;color:#cdbfa6">You weren\u2019t supposed to find this place.</p><div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #3a2e24;padding-top:10px"><span style="color:#cdbfa6;font-size:14px">Secrets discovered</span><b style="color:#e8b04a;font-size:18px">${got.length} / ${total}</b></div></div></div>
  <div class="pl"><button class="${v==='list'?'on':''}" onclick="setBV('list')">List</button><button class="${v==='grid'?'on':''}" onclick="setBV('grid')">Grid</button></div>`;
  if(v==='grid'){
-  h+='<div class="card"><div class="bg3">'+got.map(x=>`<button class="bt" onclick="brOpen('${x.id}')"><div class="bgd sm">${art(x.id,30)}</div>${esc(x.title)}${x.n>1?' \u00d7'+x.n:''}</button>`).join('')+
-   (cat?lockedCat.map(x=>`<button class="bt gr" onclick="brOpen('${x.id}')"><div class="bgd sm">${art(x.id,30)}</div>${esc(x.title)}</button>`).join(''):Array.from({length:left},()=>`<div class="bt lk"><div class="bgd sm">?</div>Locked</div>`).join(''))+'</div></div>'}
+  h+='<div class="card"><div class="bg3">'+got.map(x=>`<button class="bt" onclick="brOpen('${x.id}')"><div class="bgd sm">${art(x.id,30)}</div>${esc(x.title)}${x.n>1?'<br><span class="pill">\u00d7'+x.n+'</span>':''}</button>`).join('')+
+   (cat?lockedCat.map(x=>`<button class="bt gr" onclick="brOpen('${x.id}')"><div class="bgd sm">${art(x.id,30)}</div>${esc(x.title)}</button>`).join(''):Array.from({length:left},()=>`<div class="bt lk"><div class="bgd sm">${A(ICON.lock,26)}</div>Locked</div>`).join(''))+'</div></div>'}
  else{
-  h+=got.map(x=>`<div class="card" style="display:flex;gap:12px;align-items:center"><div class="bgd" style="width:64px;height:64px;margin:0;flex:none">${art(x.id,34)}</div><div style="min-width:0"><b>${esc(x.title)}</b>${x.n>1?' <span class="pill">\u00d7'+x.n+'</span>':''}<br><small>${esc(x.desc)}</small><br><small style="font-style:italic">${esc(x.msg)}</small>${cat?`<br><small>Earned by ${by(x.id)} player${by(x.id)===1?'':'s'}</small>`:''}</div></div>`).join('')||'<div class="card mu">Nothing discovered yet. Keep playing.</div>';
-  if(cat)h+=lockedCat.map(x=>`<div class="card gr" style="display:flex;gap:12px;align-items:center"><div class="bgd" style="width:64px;height:64px;margin:0;flex:none">${art(x.id,34)}</div><div style="min-width:0"><b>${esc(x.title)}</b> <span class="pill warn">Locked</span><br><small>${esc(x.desc)}</small><br><small style="font-style:italic">${esc(x.msg)}</small><br><small>Earned by ${x.by} player${x.by===1?'':'s'}${x.need>1?' \u00b7 shown after '+x.need+' times':''}</small></div></div>`).join('');
-  else if(left>0)h+=`<button class="card mu w" style="border-style:dashed;text-align:center" onclick="brMore()">${svgS('lock',20)}<br>Some secrets are still hidden${S.brm?'':' \u00b7 tap to count them'}</button>`+(S.brm?`<div class="bg3" style="margin-bottom:12px">${Array.from({length:left},()=>`<div class="card mu" style="margin:0;text-align:center;border-style:dashed">???</div>`).join('')}</div>`:'')}
+  h+=got.map(x=>`<div class="card" style="display:flex;gap:12px;align-items:center"><div class="bgd" style="width:64px;height:64px;margin:0;flex:none">${art(x.id,34)}</div><div style="min-width:0"><b>${esc(x.title)}</b>${x.n>1?' <span class="pill">\u00d7'+x.n+'</span>':''}<br><small>${esc(x.desc)}</small><br><small style="font-style:italic">${esc(x.msg)}</small>${cat?whoH(x.id):''}</div></div>`).join('')||'<div class="card mu">Nothing discovered yet. Keep playing.</div>';
+  if(cat)h+=lockedCat.map(x=>`<div class="card gr" style="display:flex;gap:12px;align-items:center"><div class="bgd" style="width:64px;height:64px;margin:0;flex:none">${art(x.id,34)}</div><div style="min-width:0"><b>${esc(x.title)}</b> <span class="pill warn">Locked</span><br><small>${esc(x.desc)}</small><br><small style="font-style:italic">${esc(x.msg)}</small>${whoH(x.id)}</div></div>`).join('');
+  else if(left>0)h+=`<button class="card mu w" style="border-style:dashed;text-align:center" onclick="brMore()">${svgS('lock',20)}<br>Some secrets are still hidden${S.brm?'':' \u00b7 tap to count them'}</button>`+(S.brm?`<div class="bg3" style="margin-bottom:12px">${Array.from({length:left},()=>`<div class="card mu" style="margin:0;text-align:center;border-style:dashed">${svgS('lock',16)} ???</div>`).join('')}</div>`:'')}
  if(d.finaleOn&&d.fin)h+=`<div class="card"><div class="row sp"><span>Season finale</span><button class="b s" onclick="showFin()">View again</button></div></div>`;
  return h}
 const R0=render;render=function(){try{if(S.br&&S.d&&S.code&&S.player&&!S.admin&&!S.rules){$('#app').innerHTML=hdr()+brV()+navHtml([['progress','Progress'],['log','Log'],['board','Leaderboard']],'','goT');try{fx()}catch(e){}return}}catch(e){S.br=0}R0();try{fx()}catch(e){}};
 const goT0=goT;goT=function(t){S.br=0;goT0(t)};
-/* ---------- Preferences: compact Appearance with toggles ---------- */
-const effDark=()=>{const q=localStorage.getItem('bgl_th')||'system';return q==='dark'||(q==='system'&&matchMedia('(prefers-color-scheme:dark)').matches)};
-const sw=(on,fn,dis)=>`<button class="sw${on?' on':''}" role="switch" aria-checked="${on}" ${dis?'disabled':''} onclick="${fn}"></button>`;
-const prow=(l,c)=>`<div class="row sp" style="margin:0;min-height:44px"><span>${l}</span>${c}</div>`;
-prefV=function(){const th=localStorage.getItem('bgl_th')||'system',ac=localStorage.getItem('bgl_ac')||'sage',match=th==='system',dk=effDark();
+/* ---------- Preferences: compact Appearance ---------- */
+const sw=(on,fn)=>`<button class="sw${on?' on':''}" role="switch" aria-checked="${on}" onclick="${fn}"></button>`;
+const prow=(l,c,last)=>`<div class="row sp" style="margin:0;min-height:52px${last?'':';border-bottom:1px solid var(--bd)'}"><span>${l}</span>${c}</div>`;
+prefV=function(){const th=localStorage.getItem('bgl_th')||'system',ac=localStorage.getItem('bgl_ac')||'sage';
+ const mode=`<span class="pl sm" style="margin:0">${[['light','Light'],['dark','Dark'],['system','System']].map(x=>`<button class="${th===x[0]?'on':''}" onclick="setPref('bgl_th','${x[0]}')">${x[1]}</button>`).join('')}</span>`;
  const sws=[['sage','Sage','#2f5d50'],['blue','Cornflower','#35618f'],['terracotta','Terracotta','#9c4a2f'],['plum','Plum','#6a4c7d']].map(x=>`<button aria-label="${x[1]}" aria-pressed="${ac===x[0]}" style="width:28px;height:28px;min-height:28px;border-radius:50%;border:2px solid var(--card);background:${x[2]};padding:0;${ac===x[0]?'box-shadow:0 0 0 2px var(--tx)':''}" onclick="setPref('bgl_ac','${x[0]}')"></button>`).join('');
- return `<div class="card" style="padding:8px 14px"><h2 style="margin:6px 0 2px">Appearance</h2>`+
-  prow('Match device',sw(match,`setPref('bgl_th','${match?(dk?'dark':'light'):'system'}')`))+
-  prow('Dark mode',sw(dk,`setPref('bgl_th','${dk?'light':'dark'}')`,match))+
-  prow('Flourish',sw(fl(),`setFl('${fl()?'off':'on'}')`))+
-  prow('Accent',`<span class="row" style="gap:10px;flex-wrap:nowrap">${sws}</span>`)+`</div>`+
+ return `<div class="card" style="padding:10px 14px 2px"><small style="letter-spacing:.08em;text-transform:uppercase">Appearance</small>`+
+  prow('Mode',mode)+prow('Accent colour',`<span class="row" style="gap:10px;flex-wrap:nowrap">${sws}</span>`)+prow('Flourish',sw(fl(),`setFl('${fl()?'off':'on'}')`),1)+`</div>`+
   (S.player?`<div class="card"><h2>Player</h2><p style="margin:0 0 10px">Playing as <b>${esc(S.player)}</b></p><button class="b w" onclick="S.player='';localStorage.removeItem('bgl_p');S.rules=false;render()">Change player</button></div>`:'')};
 window.setFl=v=>{localStorage.setItem('bgl_fl',v);render()};
+window.adminOut=()=>{S.pass='';sessionStorage.removeItem('bgl_a');S.admin=false;S.br=0;load()};
+/* ---------- d20: tap the BGL icon ---------- */
+const D20='<svg id="d20" viewBox="0 0 100 100" style="width:210px;height:210px;cursor:pointer;overflow:visible"><g id="d20g"><polygon points="50,6 88,28 88,72 50,94 12,72 12,28" fill="#2a2119" stroke="#e8b04a" stroke-width="2.5" stroke-linejoin="round"/><polygon points="50,22 78,68 22,68" fill="none" stroke="#e8b04a" stroke-width="2" stroke-linejoin="round"/><path d="M50 22V6M50 22L12 28M50 22L88 28M22 68L12 28M22 68L12 72M22 68L50 94M78 68L88 28M78 68L88 72M78 68L50 94" stroke="#e8b04a" stroke-width="1.5" fill="none" opacity=".7"/></g><text id="d20n" x="50" y="58" text-anchor="middle" font-size="24" font-weight="700" fill="#ffd27a" stroke="none" font-family="system-ui,sans-serif">20</text></svg>';
+const rnd=()=>{const a=new Uint32Array(1);do{crypto.getRandomValues(a)}while(a[0]>=4294967280);return a[0]%20+1};
+function d20(){if($('#dice'))return;const o=document.createElement('div');o.id='dice';o.innerHTML=D20+'<p id="d20h" style="margin:14px 0 0;font-size:14px;color:#cdbfa6">Tap the die to roll</p>';document.body.appendChild(o);
+ let busy=0,iv=0,to=0;const close=()=>{clearInterval(iv);clearTimeout(to);o.remove()};
+ o.addEventListener('click',e=>{if(!e.target.closest('#d20')){close();return}if(busy)return;busy=1;
+  const g=$('#d20g'),n=$('#d20n'),h=$('#d20h'),rr=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  h.textContent='Rolling...';n.setAttribute('opacity','.6');g.classList.remove('dr');void g.getBoundingClientRect();g.classList.add('dr');
+  iv=setInterval(()=>{n.textContent=rnd()},70);
+  to=setTimeout(()=>{clearInterval(iv);const r=rnd();n.textContent=r;n.setAttribute('opacity','1');busy=0;h.textContent=r===20?'Natural 20!':r===1?'Critical fail...':'Tap the die to roll again';if(r===20)confetti()},rr?200:1300)})}
 const AV0=adminV;adminV=function(){return '<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.admin=false;S.edit=null;render();scrollTo(0,0)">\u2190 Back to app</button></div>'+AV0()};
 /* ---------- Admin: finale + replay ---------- */
 const A0=aAwards;aAwards=function(){const on=S.d.finaleOn;
@@ -597,15 +618,17 @@ const A0=aAwards;aAwards=function(){const on=S.d.finaleOn;
  det('rep',false,'<span><b>Replay pop-ups</b></span>',`<p class="mu" style="margin-top:0">Players see each achievement pop-up once. This lets them see them again, for everyone or for one player.</p><select id="rpp" class="w" style="margin-bottom:8px"><option value="">Everyone</option>${AN(S.d).map(n=>`<option>${esc(n)}</option>`).join('')}</select><button class="b w" onclick="replay()">Replay pop-ups</button>`)+A0()};
 window.finale=on=>{if(confirm(on?'Announce the end of the league to all players now?':'Hide the announcement again?'))act('setFinale',{on:on})};
 window.replay=()=>{const p=val('rpp');if(confirm(p?'Replay all pop-ups for '+p+'?':'Replay all pop-ups for everyone?'))act('resetSeen',{player:p}).then(r=>{if(r&&r.ok)LOC.clear()})};
-/* ---------- Doors: tap your rank = Backroom; press and hold ? = Backroom; press and hold Preferences = admin unlock ---------- */
-let t=0,lp=0;const qb=e=>e.target.closest&&e.target.closest('button[aria-label="Rules"]'),pb=e=>e.target.closest&&e.target.closest('[data-adm]');
+/* ---------- Doors: tap your rank = Backroom; press and hold ? = admin unlock; tap the BGL icon = d20 ---------- */
+let t=0,lp=0;const qb=e=>e.target.closest&&e.target.closest('button[aria-label="Rules"]');
 const toBR=()=>{S.br=1;S.rules=false;S.admin=false;render();scrollTo(0,0)},toAdm=()=>{S.admin=true;S.rules=false;S.br=0;render();scrollTo(0,0)};
-document.addEventListener('pointerdown',e=>{lp=0;clearTimeout(t);const f=qb(e)?toBR:pb(e)?toAdm:null;if(f)t=setTimeout(()=>{lp=1;if(navigator.vibrate)navigator.vibrate(30);f()},650)});
+document.addEventListener('pointerdown',e=>{lp=0;clearTimeout(t);if(qb(e))t=setTimeout(()=>{lp=1;if(navigator.vibrate)navigator.vibrate(30);toAdm()},650)});
 ['pointerup','pointercancel'].forEach(v=>document.addEventListener(v,()=>clearTimeout(t)));
-document.addEventListener('contextmenu',e=>{if(qb(e)||pb(e))e.preventDefault()});
-document.addEventListener('click',e=>{if(lp&&(qb(e)||pb(e))){e.stopImmediatePropagation();e.preventDefault();lp=0;return}
- if(e.target.closest&&e.target.closest('[data-rank]')&&S.d&&S.player&&!S.admin){toBR();return}
- if(S.br&&e.target.closest('header button'))S.br=0},true);
+document.addEventListener('contextmenu',e=>{if(qb(e))e.preventDefault()});
+document.addEventListener('click',e=>{if(lp&&qb(e)){e.stopImmediatePropagation();e.preventDefault();lp=0;return}
+ const c=e.target.closest?e.target:null;if(!c)return;
+ if(c.closest('h1 img')&&!$('#dice')){d20();return}
+ if(c.closest('[data-rank]')&&S.d&&S.player&&!S.admin){toBR();return}
+ if(S.br&&c.closest('header button'))S.br=0},true);
 try{fx()}catch(e){}
 })();}catch(e){console.error('BGL v8 add-on failed',e)}
 </script></body></html>
