@@ -464,6 +464,7 @@ async function saveEdit(){
 (function(){try{const c=JSON.parse(localStorage.getItem('bgl_cache_'+S.player));if(c&&c.me&&S.code){c.admin=false;S.d=c;c._t=Date.now()-9e5}}catch(e){}})();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.code&&S.d&&!S.busy&&Date.now()-S.d._t>30000)load()});
 applyPrefs();render();load();
+</script>
 <!-- BGL v8: Backroom, achievements, finale, easter eggs. Paste this whole block just before </body>. It only adds code; nothing in your file is removed.
      Also put backroom.jpg in the same folder as index.html. -->
 <style>
