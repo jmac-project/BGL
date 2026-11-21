@@ -465,7 +465,8 @@ async function saveEdit(){
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.code&&S.d&&!S.busy&&Date.now()-S.d._t>30000)load()});
 applyPrefs();render();load();
 </script>
-<!-- BGL v8: Backroom, achievements, finale, easter eggs. Paste this whole block just before </body>. It only adds code; nothing in your file is removed.
+<!-- BGL v8 add-on. Paste this whole block after the main script has closed and before the closing body tag. Never inside the existing script.
+     It only adds code and cannot stop the app from loading: if anything in it fails, the app carries on as before.
      Also put backroom.jpg in the same folder as index.html. -->
 <style>
 #pop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}
@@ -476,7 +477,9 @@ applyPrefs();render();load();
 .cf{position:fixed;top:-12px;width:8px;height:12px;z-index:30;pointer-events:none;animation:cfa 1.8s ease-in forwards}
 @keyframes cfa{to{transform:translateY(105vh) rotate(540deg);opacity:.8}}
 @media(prefers-reduced-motion:reduce){#pop .pc{animation:none}.cf{display:none}}
-button[aria-label=Rules],[data-door]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+button[aria-label=Rules],[data-adm]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+button[aria-label=Admin]{display:none}[data-rank]{cursor:pointer}
+.sw{width:46px;height:28px;min-height:28px;border-radius:14px;border:0;background:var(--bd);position:relative;padding:0;flex:none}.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--card);transition:left .15s}.sw.on{background:var(--ac)}.sw.on::after{left:21px}.sw:disabled{opacity:.4}
 .brh{background:#1b1511;border-radius:12px;overflow:hidden;margin-bottom:12px;color:#f0e6d2}
 .brh img{display:block;width:100%;height:auto}.brh .in{padding:14px 18px 16px}
 .bg3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -484,7 +487,7 @@ button[aria-label=Rules],[data-door]{-webkit-touch-callout:none;-webkit-user-sel
 .bt.lk .bgd{background:none;border:2px dashed var(--bd);color:var(--mu)}.bt.lk{color:var(--mu)}.gr{opacity:.45}
 </style>
 <script>
-(function(){
+try{(function(){
 const A=(k,s)=>`<svg viewBox="0 0 24 24" style="width:${s||52}px;height:${s||52}px">${k}</svg>`;
 const ART={
 a1:ICON.crown+'<path d="M4 4l16 16"/>',
@@ -511,8 +514,10 @@ b4:'<path d="M12 21v-8M12 13c0-4-3-6-7-6 0 4 3 6 7 6zM12 15c0-3 2-5 6-5 0 3-2 5-
 b5:'<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>'};
 const art=(id,s)=>A(ART[id]||ICON.medal,s);
 /* seen pop-ups are remembered on the server per player; LOC covers the moment before the next refresh */
-const LOC=new Set(),kk=k=>S.player+'|'+k,isSeen=k=>LOC.has(kk(k))||((S.d&&S.d.seen)||[]).indexOf(k)>=0;
-const markSeen=k=>{LOC.add(kk(k));try{api('ack',{keys:[k]}).catch(()=>{})}catch(e){}};
+const LOC=new Set(),kk=k=>S.player+'|'+k,oldSrv=()=>!(S.d&&S.d.ver),lk=()=>'bgl_seen2_'+S.player;
+const locGet=()=>{try{return JSON.parse(localStorage.getItem(lk()))||[]}catch(e){return[]}};
+const isSeen=k=>LOC.has(kk(k))||((S.d&&S.d.seen)||[]).indexOf(k)>=0||(oldSrv()&&locGet().indexOf(k)>=0);
+const markSeen=k=>{LOC.add(kk(k));if(oldSrv()){const a=locGet();a.push(k);try{localStorage.setItem(lk(),JSON.stringify(a))}catch(e){}}try{api('ack',{keys:[k]}).catch(()=>{})}catch(e){}};
 const fl=()=>localStorage.getItem('bgl_fl')!=='off';
 const FIN=['Better luck next time. May the dice rolls be ever in your favour.','The dice gods were not kind this season. They\u2019ll be watching next time.','The dice have spoken, and they mumbled. Redemption awaits next season.','A noble season, a cruel set of dice. Roll again.','Fortune favours the bold, and you\u2019re getting bolder. See you next season.'];
 const TR=[['#b8962e','Champion of the league!','The dice gods bow to you.'],['#8d949b','Runner-up, and proud of it','So close to glory. The dice gods noticed.'],['#a8683b','On the podium!','Third place, well rolled.']];
@@ -529,7 +534,7 @@ const EMP={'No games yet.':'The board is set. Pieces are waiting.','No scores ye
 const RARE=['Spreadsheet gods appeased.','The dice gods approve.','History will remember this.'];
 function gapLine(){
  const d=S.d,m=d&&d.me;if(S.tab!=='progress'||!m||d.admin)return;const st=document.querySelector('#app .stats');if(!st)return;
- const bigs=st.querySelectorAll('.big');if(bigs[1])bigs[1].dataset.door='1';
+ const bigs=st.querySelectorAll('.big');if(bigs[1]&&bigs[1].parentNode)bigs[1].parentNode.dataset.rank='1';
  if(st.parentNode.querySelector('[data-gap]')||m.rank<2||m.rank>3)return;
  const t=(d.top3||[]).find(x=>x.rank===m.rank-1);if(!t)return;const g=t.total-m.total;if(g<=0)return;
  const p=document.createElement('p');p.className='mu';p.dataset.gap='1';p.style.cssText='margin:10px 0 0;text-align:center';
@@ -538,6 +543,9 @@ function fx(){
  document.querySelectorAll('p.mu').forEach(e=>{if(e.textContent.indexOf('XMG Partners')>=0)e.textContent=e.textContent.replace('XMG Partners','XMG Projects')});
  document.querySelectorAll('.card.mu').forEach(e=>{const t=e.textContent.trim();if(EMP[t])e.textContent=EMP[t];else if(t.indexOf('No sessions yet.')===0)e.textContent='The table is empty. A host needs to create a session first.'});
  gapLine();
+ document.querySelectorAll('.seg button').forEach(b=>{if(b.textContent.trim()==='Preferences')b.dataset.adm='1'});
+ document.querySelectorAll('p.mu').forEach(e=>{if(e.textContent.indexOf('lock icon')>=0)e.textContent='Use Back to return to the app.'});
+ if(S.d&&S.d.admin&&!S.d.ver&&!S.verWarn){S.verWarn=1;flash('The server (Code.gs) is out of date. Deploy the latest version.',7000)}
  if(!S.done)S.doneFx=0;else if(!S.doneFx&&/^Logged:/.test(S.done)){S.doneFx=1;const b=document.querySelector('.card.ok b');if(b&&Math.random()<.05)b.textContent=S.done+' '+RARE[Math.floor(Math.random()*3)]}
  const d=S.d;if(!d||d.admin||!S.player||S.admin||S.rules||$('#pop'))return;
  const m=d.me;
@@ -547,7 +555,7 @@ function fx(){
   if(m.total===100&&!isSeen('m100')){markSeen('m100');flash('Exactly 100 points. Nicely rolled.',4000);confetti()}
   else if(m.playing===mxp&&!isSeen('mmax')){markSeen('mmax');flash('Perfect playing score. Chef\u2019s kiss.',4000);confetti()}}}
 /* ---------- Backroom ---------- */
-const BV=()=>localStorage.getItem('bgl_bv')||'list';
+const BV=()=>localStorage.getItem('bgl_bv')||'grid';
 window.setBV=v=>{localStorage.setItem('bgl_bv',v);render()};
 window.brOpen=id=>{const d=S.d,x=(d.ach||[]).find(a=>a.id===id),c=(d.achCat||[]).find(a=>a.id===id),y=x||c;if(!y)return;
  pop({art:art(id),kicker:x?'Unlocked'+(x.n>1?' \u00b7 earned \u00d7'+x.n:''):'Not unlocked yet',title:y.title,sub:y.desc,msg:y.msg,btn:'Close'})};
@@ -567,23 +575,37 @@ function brV(){
   else if(left>0)h+=`<button class="card mu w" style="border-style:dashed;text-align:center" onclick="brMore()">${svgS('lock',20)}<br>Some secrets are still hidden${S.brm?'':' \u00b7 tap to count them'}</button>`+(S.brm?`<div class="bg3" style="margin-bottom:12px">${Array.from({length:left},()=>`<div class="card mu" style="margin:0;text-align:center;border-style:dashed">???</div>`).join('')}</div>`:'')}
  if(d.finaleOn&&d.fin)h+=`<div class="card"><div class="row sp"><span>Season finale</span><button class="b s" onclick="showFin()">View again</button></div></div>`;
  return h}
-const R0=render;render=function(){if(S.br&&S.d&&S.code&&S.player&&!S.admin&&!S.rules){$('#app').innerHTML=hdr()+brV()+navHtml([['progress','Progress'],['log','Log'],['board','Leaderboard']],'','goT');fx();return}R0();fx()};
+const R0=render;render=function(){try{if(S.br&&S.d&&S.code&&S.player&&!S.admin&&!S.rules){$('#app').innerHTML=hdr()+brV()+navHtml([['progress','Progress'],['log','Log'],['board','Leaderboard']],'','goT');try{fx()}catch(e){}return}}catch(e){S.br=0}R0();try{fx()}catch(e){}};
 const goT0=goT;goT=function(t){S.br=0;goT0(t)};
-/* ---------- Preferences: Flourish ---------- */
-const P0=prefV;prefV=function(){const on=fl();return P0()+`<div class="card"><h2>Flourish</h2><small>Extra sparkle on special moments</small><div class="seg" style="margin:8px 0 0">${[['on','On'],['off','Off']].map(x=>`<button class="${(on?'on':'off')===x[0]?'on':''}" onclick="setFl('${x[0]}')">${x[1]}</button>`).join('')}</div><small class="mu" style="display:block;margin-top:8px">Saved on this device only.</small></div>`};
+/* ---------- Preferences: compact Appearance with toggles ---------- */
+const effDark=()=>{const q=localStorage.getItem('bgl_th')||'system';return q==='dark'||(q==='system'&&matchMedia('(prefers-color-scheme:dark)').matches)};
+const sw=(on,fn,dis)=>`<button class="sw${on?' on':''}" role="switch" aria-checked="${on}" ${dis?'disabled':''} onclick="${fn}"></button>`;
+const prow=(l,c)=>`<div class="row sp" style="margin:0;min-height:44px"><span>${l}</span>${c}</div>`;
+prefV=function(){const th=localStorage.getItem('bgl_th')||'system',ac=localStorage.getItem('bgl_ac')||'sage',match=th==='system',dk=effDark();
+ const sws=[['sage','Sage','#2f5d50'],['blue','Cornflower','#35618f'],['terracotta','Terracotta','#9c4a2f'],['plum','Plum','#6a4c7d']].map(x=>`<button aria-label="${x[1]}" aria-pressed="${ac===x[0]}" style="width:28px;height:28px;min-height:28px;border-radius:50%;border:2px solid var(--card);background:${x[2]};padding:0;${ac===x[0]?'box-shadow:0 0 0 2px var(--tx)':''}" onclick="setPref('bgl_ac','${x[0]}')"></button>`).join('');
+ return `<div class="card" style="padding:8px 14px"><h2 style="margin:6px 0 2px">Appearance</h2>`+
+  prow('Match device',sw(match,`setPref('bgl_th','${match?(dk?'dark':'light'):'system'}')`))+
+  prow('Dark mode',sw(dk,`setPref('bgl_th','${dk?'light':'dark'}')`,match))+
+  prow('Flourish',sw(fl(),`setFl('${fl()?'off':'on'}')`))+
+  prow('Accent',`<span class="row" style="gap:10px;flex-wrap:nowrap">${sws}</span>`)+`</div>`+
+  (S.player?`<div class="card"><h2>Player</h2><p style="margin:0 0 10px">Playing as <b>${esc(S.player)}</b></p><button class="b w" onclick="S.player='';localStorage.removeItem('bgl_p');S.rules=false;render()">Change player</button></div>`:'')};
 window.setFl=v=>{localStorage.setItem('bgl_fl',v);render()};
+const AV0=adminV;adminV=function(){return '<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.admin=false;S.edit=null;render();scrollTo(0,0)">\u2190 Back to app</button></div>'+AV0()};
 /* ---------- Admin: finale + replay ---------- */
 const A0=aAwards;aAwards=function(){const on=S.d.finaleOn;
  return det('fin',false,`<span><b>End of league</b></span><span class="pill ${on?'':'warn'}">${on?'Announced':'Not announced'}</span>`,`<p class="mu" style="margin-top:0">Shows every player a one-time pop-up with their final rank. The top 3 get a gold, silver or bronze trophy. Reveal accolades first if you want them counted in the final ranks.</p>`+(on?`<button class="b w" onclick="finale(false)">Hide announcement</button>`:`<button class="b danger w" onclick="finale(true)">Announce end of league</button>`))+
  det('rep',false,'<span><b>Replay pop-ups</b></span>',`<p class="mu" style="margin-top:0">Players see each achievement pop-up once. This lets them see them again, for everyone or for one player.</p><select id="rpp" class="w" style="margin-bottom:8px"><option value="">Everyone</option>${AN(S.d).map(n=>`<option>${esc(n)}</option>`).join('')}</select><button class="b w" onclick="replay()">Replay pop-ups</button>`)+A0()};
 window.finale=on=>{if(confirm(on?'Announce the end of the league to all players now?':'Hide the announcement again?'))act('setFinale',{on:on})};
 window.replay=()=>{const p=val('rpp');if(confirm(p?'Replay all pop-ups for '+p+'?':'Replay all pop-ups for everyone?'))act('resetSeen',{player:p}).then(r=>{if(r&&r.ok)LOC.clear()})};
-/* ---------- Doors to the Backroom: press and hold the ? button or your rank ---------- */
-let t=0,lp=0;const door=e=>e.target.closest&&e.target.closest('button[aria-label="Rules"],[data-door]');
-document.addEventListener('pointerdown',e=>{lp=0;clearTimeout(t);if(!door(e))return;t=setTimeout(()=>{lp=1;if(navigator.vibrate)navigator.vibrate(30);S.br=1;S.rules=false;S.admin=false;render();scrollTo(0,0)},650)});
+/* ---------- Doors: tap your rank = Backroom; press and hold ? = Backroom; press and hold Preferences = admin unlock ---------- */
+let t=0,lp=0;const qb=e=>e.target.closest&&e.target.closest('button[aria-label="Rules"]'),pb=e=>e.target.closest&&e.target.closest('[data-adm]');
+const toBR=()=>{S.br=1;S.rules=false;S.admin=false;render();scrollTo(0,0)},toAdm=()=>{S.admin=true;S.rules=false;S.br=0;render();scrollTo(0,0)};
+document.addEventListener('pointerdown',e=>{lp=0;clearTimeout(t);const f=qb(e)?toBR:pb(e)?toAdm:null;if(f)t=setTimeout(()=>{lp=1;if(navigator.vibrate)navigator.vibrate(30);f()},650)});
 ['pointerup','pointercancel'].forEach(v=>document.addEventListener(v,()=>clearTimeout(t)));
-document.addEventListener('contextmenu',e=>{if(door(e))e.preventDefault()});
-document.addEventListener('click',e=>{if(lp&&door(e)){e.stopImmediatePropagation();e.preventDefault();lp=0;return}if(S.br&&e.target.closest('header button'))S.br=0},true);
-fx();
-})();
+document.addEventListener('contextmenu',e=>{if(qb(e)||pb(e))e.preventDefault()});
+document.addEventListener('click',e=>{if(lp&&(qb(e)||pb(e))){e.stopImmediatePropagation();e.preventDefault();lp=0;return}
+ if(e.target.closest&&e.target.closest('[data-rank]')&&S.d&&S.player&&!S.admin){toBR();return}
+ if(S.br&&e.target.closest('header button'))S.br=0},true);
+try{fx()}catch(e){}
+})();}catch(e){console.error('BGL v8 add-on failed',e)}
 </script></body></html>
