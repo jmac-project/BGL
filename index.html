@@ -465,7 +465,7 @@ async function saveEdit(){
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.code&&S.d&&!S.busy&&Date.now()-S.d._t>30000)load()});
 applyPrefs();render();load();
 </script>
-<!-- BGL v8.8 add-on (replaces the earlier v8.7 add-on block entirely: delete the old block from its first comment line to its closing script tag, then paste this in the same place). Paste this whole block after the main script has closed and before the closing body tag. Never inside the existing script.
+<!-- BGL v8.9 add-on (replaces the earlier v8.8 add-on block entirely: delete the old block from its first comment line to its closing script tag, then paste this in the same place). Paste this whole block after the main script has closed and before the closing body tag. Never inside the existing script.
      It only adds code and cannot stop the app from loading: if anything in it fails, the app carries on as before.
      Also put backroom.jpg in the same folder as index.html. -->
 <style>
@@ -494,7 +494,7 @@ button[aria-label=Admin]{display:none}[data-rank],h1 img{cursor:pointer}.pl.sm b
 #app .hint{display:none!important}
 #dice{display:block;overflow:hidden;--ds:min(260px,34vh)}#dice .dc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);line-height:0}
 #d20h{position:absolute;left:0;right:0;top:calc(50% + var(--ds)/2 + 10px);margin:0;text-align:center;font-size:14px;color:#cdbfa6;pointer-events:none}
-.d20r{position:absolute;left:0;right:0;top:calc(50% + var(--ds)/2 + 40px);text-align:center;color:#cdbfa6;font-size:12px;pointer-events:none}.d20r div{width:90px;margin:4px auto 0;padding:3px 0;border-radius:10px;border:1px solid var(--dsb,#5a4a2a);background:var(--df,#2a2119);font-size:14px;font-weight:700;color:var(--dn,#ffd27a)}.d20r div.n{border:1.5px solid var(--ds,#e8b04a)}
+.d20r{position:absolute;left:0;right:0;top:calc(50% + var(--ds)/2 + 40px);text-align:center;color:#cdbfa6;font-size:12px;pointer-events:none}.d20r div{width:90px;margin:4px auto 0;padding:3px 0;border-radius:10px;border:1px solid var(--dsb,#5a4a2a);background:var(--df,#2a2119);font-size:14px;font-weight:700;color:var(--dn,#ffd27a)}.d20r div.n{border:1.5px solid var(--dk,#e8b04a)}
 </style>
 <script>
 try{(function(){
@@ -563,6 +563,7 @@ function gapLine(){
  const p=document.createElement('p');p.className='mu';p.dataset.gap='1';p.style.cssText='margin:10px 0 0;text-align:center';
  p.textContent=g+' point'+(g>1?'s':'')+' behind '+ord(m.rank-2)+' place';st.insertAdjacentElement('afterend',p)}
 function fx(){
+ if(S.doorTry&&!S.busy){S.doorTry=0;if(S.d&&S.d.admin)flash('The door opens.')}
  try{if(S.tab==='progress')document.querySelectorAll('#app .card,#app p,#app .note,#app .banner,#app .mu').forEach(e=>{if(e.isConnected&&/^\s*Still to play/i.test(e.textContent)&&e.textContent.length<400)e.remove()})}catch(e){}
  document.querySelectorAll('p.mu').forEach(e=>{if(e.textContent.indexOf('XMG Partners')>=0)e.textContent=e.textContent.replace('XMG Partners','XMG Projects')});
  document.querySelectorAll('.card.mu').forEach(e=>{const t=e.textContent.trim();if(EMP[t])e.textContent=EMP[t];else if(t.indexOf('No sessions yet.')===0)e.textContent='The table is empty. A host needs to create a session first.'});
@@ -618,7 +619,7 @@ prefV=function(){const th=localStorage.getItem('bgl_th')||'system',ac=localStora
  const sws=[['sage','Sage','#2f5d50'],['blue','Cornflower','#35618f'],['terracotta','Terracotta','#9c4a2f'],['plum','Plum','#6a4c7d']].map(x=>`<button aria-label="${x[1]}" aria-pressed="${ac===x[0]}" style="width:28px;height:28px;min-height:28px;border-radius:50%;border:2px solid var(--card);background:${x[2]};padding:0;${ac===x[0]?'box-shadow:0 0 0 2px var(--tx)':''}" onclick="setPref('bgl_ac','${x[0]}')"></button>`).join('');
  const dws=DICE.map((x,i)=>`<button aria-label="${x[0]}" aria-pressed="${DCI()===i}" style="width:28px;height:28px;min-height:28px;border-radius:50%;border:2px solid var(--card);background:${x[1]};padding:0;box-shadow:inset 0 0 0 3px ${x[2]}${DCI()===i?',0 0 0 2px var(--tx)':''}" onclick="setDice(${i})"></button>`).join('');
  return `<div class="card" style="padding:10px 14px 2px"><small style="letter-spacing:.08em;text-transform:uppercase">Appearance</small>`+
-  prow('Mode',mode)+prow('Accent colour',`<span class="row" style="gap:10px;flex-wrap:nowrap">${sws}</span>`)+prow('Dice colour',`<span class="row" style="gap:10px;flex-wrap:nowrap">${dws}</span>`)+prow('Flourish',sw(fl(),`setFl('${fl()?'off':'on'}')`))+prow('Sound',sw(SND(),`setSnd('${SND()?'off':'on'}')`))+prow('Vibration',sw(VIB(),`setVib('${VIB()?'off':'on'}')`),1)+`</div>`+
+  prow('Mode',mode)+prow('Accent colour',`<span class="row" style="gap:10px;flex-wrap:nowrap">${sws}</span>`)+prow('Dice colour',`<span class="row" style="gap:10px;flex-wrap:nowrap">${dws}</span>`)+prow('Flourish',sw(fl(),`setFl('${fl()?'off':'on'}')`),1)+`</div><div class="card" style="padding:10px 14px 2px"><small style="letter-spacing:.08em;text-transform:uppercase">Audio and feedback</small>`+prow('Sound',sw(SND(),`setSnd('${SND()?'off':'on'}')`))+prow('Vibration',sw(VIB(),`setVib('${VIB()?'off':'on'}')`),1)+`</div>`+
   (S.player?`<div class="card"><h2>Player</h2><p style="margin:0 0 10px">Playing as <b>${esc(S.player)}</b></p><button class="b w" onclick="S.player='';localStorage.removeItem('bgl_p');S.rules=false;render()">Change player</button></div>`:'')};
 window.setFl=v=>{localStorage.setItem('bgl_fl',v);render()};
 window.setSnd=v=>{localStorage.setItem('bgl_snd',v);render()};
@@ -637,7 +638,7 @@ const tn=(type,f1,f2,t,v)=>{if(!SND())return;try{AC=AC||new(window.AudioContext|
 const tick=()=>tn('triangle',1500,900,.03,.35),thud=()=>{tn('triangle',240,90,.18,.8);tn('square',2000,1200,.02,.2)};
 const rhH=()=>RH.length?'Recent rolls'+RH.map((v,i)=>`<div${i?'':' class="n"'}>${v}</div>`).join(''):'';
 const rnd=()=>{const a=new Uint32Array(1);do{crypto.getRandomValues(a)}while(a[0]>=4294967280);return a[0]%20+1};
-function d20(){if($('#dice'))return;const o=document.createElement('div');o.id='dice';{const c=DICE[DCI()];o.style.setProperty('--df',c[1]);o.style.setProperty('--ds',c[2]);o.style.setProperty('--dn',c[3]);o.style.setProperty('--dsb',c[2]+'66')}
+function d20(){if($('#dice'))return;const o=document.createElement('div');o.id='dice';{const c=DICE[DCI()];o.style.setProperty('--df',c[1]);o.style.setProperty('--dk',c[2]);o.style.setProperty('--dn',c[3]);o.style.setProperty('--dsb',c[2]+'66')}
  try{if(SND()){AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}}catch(e){}
  o.innerHTML='<div class="dc">'+D20f()+'</div><p id="d20h">Tap the die to roll</p><div class="d20r" id="d20r">'+rhH()+'</div>';document.body.appendChild(o);
  let busy=0,iv=0,to=0,k=0;const close=()=>{clearInterval(iv);clearTimeout(to);o.remove()};
@@ -646,7 +647,12 @@ function d20(){if($('#dice'))return;const o=document.createElement('div');o.id='
   h.textContent='Rolling...';n.setAttribute('opacity','.6');vib(10);tick();g.classList.remove('dr');void g.getBoundingClientRect();g.classList.add('dr');
   iv=setInterval(()=>{n.textContent=rnd();tick();if(k++%2===0)vib(8)},70);
   to=setTimeout(()=>{clearInterval(iv);const r=rnd();n.textContent=r;n.setAttribute('opacity','1');busy=0;vib(40);thud();RH.unshift(r);if(RH.length>5)RH.length=5;const rl=$('#d20r');if(rl)rl.innerHTML=rhH();h.textContent=r===20?'Natural 20!':r===1?'Critical fail...':'Tap the die to roll again';if(r===20)confetti()},rr?200:1300)})}
-const AV0=adminV;adminV=function(){return '<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.admin=false;S.edit=null;render();scrollTo(0,0)">\u2190 Back to app</button></div>'+AV0()};
+const AV0=adminV;adminV=function(){
+ const back='<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.admin=false;S.edit=null;render();scrollTo(0,0)">\u2190 Back to app</button></div>';
+ if(S.d&&!S.d.admin)return back+
+  `<div class="brh"><img src="sam-guard.jpg" alt="Sam, a small fluffy grey dog, resting on a bench beside a sealed magic door in a library." decoding="async" style="aspect-ratio:3/2;object-fit:cover" onerror="this.style.display='none'"><div class="in"><h2 style="margin:0 0 4px;font-size:22px;color:#e8b04a">Halt. Who goes there?</h2><p style="margin:0;color:#cdbfa6">Sam guards this door fiercely. Only the chosen ones may pass.</p></div></div>`+
+  `<div class="card"><h2>Admin access</h2>${S.passErr?`<p class="err">${S.passErr===2?'Sam is losing patience. Try again in 15 minutes.':'Sam doesn\u2019t recognise you. Try again.'}</p>`:''}<div class="row"><input id="pw" type="password" placeholder="Passcode" class="w"><button class="b p w" onclick="S.pass=val('pw');S.passErr=false;S.doorTry=1;sessionStorage.setItem('bgl_a',S.pass);load()">Enter</button></div><p class="mu">Turn back now, and Sam will let you leave.</p></div>`;
+ return back+AV0()};
 /* ---------- Admin: finale + replay ---------- */
 const A0=aAwards;aAwards=function(){const on=S.d.finaleOn;
  return det('fin',false,`<span><b>End of league</b></span><span class="pill ${on?'':'warn'}">${on?'Announced':'Not announced'}</span>`,`<p class="mu" style="margin-top:0">Shows every player a one-time pop-up with their final rank. The top 3 get a gold, silver or bronze trophy. Reveal accolades first if you want them counted in the final ranks.</p>`+(on?`<button class="b w" onclick="finale(false)">Hide announcement</button>`:`<button class="b danger w" onclick="finale(true)">Announce end of league</button>`))+
