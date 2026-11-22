@@ -465,7 +465,7 @@ async function saveEdit(){
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.code&&S.d&&!S.busy&&Date.now()-S.d._t>30000)load()});
 applyPrefs();render();load();
 </script>
-<!-- BGL v8.7 add-on (replaces the earlier v8.6 add-on block entirely: delete the old block from its first comment line to its closing script tag, then paste this in the same place). Paste this whole block after the main script has closed and before the closing body tag. Never inside the existing script.
+<!-- BGL v8.8 add-on (replaces the earlier v8.7 add-on block entirely: delete the old block from its first comment line to its closing script tag, then paste this in the same place). Paste this whole block after the main script has closed and before the closing body tag. Never inside the existing script.
      It only adds code and cannot stop the app from loading: if anything in it fails, the app carries on as before.
      Also put backroom.jpg in the same folder as index.html. -->
 <style>
@@ -494,7 +494,7 @@ button[aria-label=Admin]{display:none}[data-rank],h1 img{cursor:pointer}.pl.sm b
 #app .hint{display:none!important}
 #dice{display:block;overflow:hidden;--ds:min(260px,34vh)}#dice .dc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);line-height:0}
 #d20h{position:absolute;left:0;right:0;top:calc(50% + var(--ds)/2 + 10px);margin:0;text-align:center;font-size:14px;color:#cdbfa6;pointer-events:none}
-.d20r{position:absolute;left:0;right:0;top:calc(50% + var(--ds)/2 + 40px);text-align:center;color:#cdbfa6;font-size:12px;pointer-events:none}.d20r div{width:90px;margin:4px auto 0;padding:2px 0;border-radius:10px;border:1px solid #3a2e24;font-size:14px;font-weight:700;color:#cdbfa6}.d20r div.n{border-color:#e8b04a;color:#ffd27a}
+.d20r{position:absolute;left:0;right:0;top:calc(50% + var(--ds)/2 + 40px);text-align:center;color:#cdbfa6;font-size:12px;pointer-events:none}.d20r div{width:90px;margin:4px auto 0;padding:3px 0;border-radius:10px;border:1px solid var(--dsb,#5a4a2a);background:var(--df,#2a2119);font-size:14px;font-weight:700;color:var(--dn,#ffd27a)}.d20r div.n{border:1.5px solid var(--ds,#e8b04a)}
 </style>
 <script>
 try{(function(){
@@ -539,16 +539,19 @@ const sendAck=ks=>{try{api('ack',{keys:ks}).then(r=>{if(r&&r.ok){const p=pGet().
 const markSeen=k=>{LOC.add(kk(k));const p=pGet();if(p.indexOf(k)<0){p.push(k);pSet(p)}if(oldSrv()){const a=locGet();a.push(k);try{localStorage.setItem(lk(),JSON.stringify(a))}catch(e){}}sendAck([k])};
 const fl=()=>localStorage.getItem('bgl_fl')!=='off';
 const SND=()=>localStorage.getItem('bgl_snd')!=='off';
+const VIB=()=>localStorage.getItem('bgl_vib')!=='off';
+const DICE=[['Gold','#2a2119','#e8b04a','#ffd27a'],['Ruby','#2b1417','#e0566b','#ffb3bd'],['Sapphire','#14202b','#41b3ff','#bfe3ff'],['Emerald','#12261d','#4cc38a','#b5ecd1']];
+const DCI=()=>{const i=+localStorage.getItem('bgl_dc')||0;return i>=0&&i<DICE.length?i:0};
 const FIN=['Better luck next time. May the dice rolls be ever in your favour.','The dice gods were not kind this season. They\u2019ll be watching next time.','The dice have spoken, and they mumbled. Redemption awaits next season.','A noble season, a cruel set of dice. Roll again.','Fortune favours the bold, and you\u2019re getting bolder. See you next season.'];
 const TR=[['#b8962e','Champion of the league!','The dice gods bow to you.'],['#8d949b','Runner-up, and proud of it','So close to glory. The dice gods noticed.'],['#a8683b','On the podium!','Third place, well rolled.']];
 function confetti(){if(!fl()||matchMedia('(prefers-reduced-motion:reduce)').matches)return;const c=['#b8962e','#8d949b','#a8683b','#2f5d50','#9c4a2f'];for(let i=0;i<28;i++){const e=document.createElement('i');e.className='cf';e.style.left=Math.random()*100+'vw';e.style.background=c[i%5];e.style.animationDelay=Math.random()*.5+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),2600)}}
 function pop(o){const p=document.createElement('div');p.id='pop';
  p.innerHTML=`<div class="pc" role="dialog" aria-modal="true"><div class="bgd" style="${o.col?'color:'+o.col:''}">${o.art}</div><small>${o.kicker}</small><h2 style="font-size:20px;margin:4px 0 8px">${esc(o.title)}</h2>${o.sub?`<p class="mu" style="margin:0 0 8px;font-size:14px">${esc(o.sub)}</p>`:''}<p style="margin:0 0 ${o.extra||o.raw?8:16}px">${esc(o.msg)}</p>${o.extra?`<p class="mu" style="margin:0 0 14px;font-size:13px">${esc(o.extra)}</p>`:''}${o.raw?`<div style="margin:0 0 14px;font-size:13px">${o.raw}</div>`:''}<button class="b p w" id="popok">${o.btn||'Nice'}</button></div>`;
- document.body.appendChild(p);if(o.conf)confetti();
+ document.body.appendChild(p);if(o.conf)confetti();if(o.vib)vib(o.vib);
  $('#popok').onclick=()=>{p.remove();fx()}}
 function showFin(){const f=S.d.fin;if(!f)return;const r=f.rank,t=TR[r-1];let h=0;for(const c of S.player)h+=c.charCodeAt(0);
- pop(t?{art:A(ICON.board,56),col:t[0],kicker:'End of the league \u00b7 '+f.total+' points',title:t[1],msg:t[2]+' You finished '+ord(r-1)+'.',conf:1,btn:'Thanks'}
- :{art:A(ICON.board,56),kicker:'End of the league \u00b7 '+f.total+' points',title:'That\u2019s a wrap on the league',msg:FIN[h%5]+' You finished '+ord(r-1)+'.',btn:'Thanks'})}
+ pop(t?{art:A(ICON.board,56),col:t[0],kicker:'End of the league \u00b7 '+f.total+' points',title:t[1],msg:t[2]+' You finished '+ord(r-1)+'.',conf:1,vib:[60,50,60,50,60,50,180],btn:'Thanks'}
+ :{art:A(ICON.board,56),kicker:'End of the league \u00b7 '+f.total+' points',title:'That\u2019s a wrap on the league',msg:FIN[h%5]+' You finished '+ord(r-1)+'.',vib:[40,50,40],btn:'Thanks'})}
 window.showFin=showFin;
 const EMP={'No games yet.':'The board is set. Pieces are waiting.','No scores yet.':'The dice are still in the cup. Scores will land here.'};
 const RARE=['Spreadsheet gods appeased.','The dice gods approve.','History will remember this.'];
@@ -576,10 +579,10 @@ function fx(){
  if(!d._pf)return;
  if(d.ver&&!d._fl){d._fl=1;const sv=d.seen||[],pn=pGet().filter(x=>sv.indexOf(x)<0);pSet(pn);if(pn.length)sendAck(pn.slice(0,20))}
  if(d.finaleOn&&d.fin&&!isSeen('fin')){markSeen('fin');showFin();return}
- for(const a of (d.ach||[])){const k='a:'+a.id;if(!isSeen(k)){markSeen(k);pop({art:art(a.id),kicker:'Secret achievement unlocked',title:a.title,msg:a.msg,conf:1,btn:'Nice'});return}}
+ for(const a of (d.ach||[])){const k='a:'+a.id;if(!isSeen(k)){markSeen(k);pop({art:art(a.id),kicker:'Secret achievement unlocked',title:a.title,msg:a.msg,conf:1,vib:[30,40,30,40,90],btn:'Nice'});return}}
  if(m){const mxp=2*d.table[0].reduce((x,y)=>x+y,0)+2*Math.max(...d.table[0]);
-  if(m.total===100&&!isSeen('m100')){markSeen('m100');flash('Exactly 100 points. Nicely rolled.',4000);confetti()}
-  else if(m.playing===mxp&&!isSeen('mmax')){markSeen('mmax');flash('Perfect playing score. Chef\u2019s kiss.',4000);confetti()}}}
+  if(m.total===100&&!isSeen('m100')){markSeen('m100');flash('Exactly 100 points. Nicely rolled.',4000);vib([30,40,90]);confetti()}
+  else if(m.playing===mxp&&!isSeen('mmax')){markSeen('mmax');flash('Perfect playing score. Chef\u2019s kiss.',4000);vib([30,40,90]);confetti()}}}
 /* ---------- Backroom ---------- */
 const BV=()=>localStorage.getItem('bgl_bv')||'grid';
 window.setBV=v=>{localStorage.setItem('bgl_bv',v);render()};
@@ -613,26 +616,36 @@ const prow=(l,c,last)=>`<div class="row sp" style="margin:0;min-height:52px${las
 prefV=function(){const th=localStorage.getItem('bgl_th')||'system',ac=localStorage.getItem('bgl_ac')||'sage';
  const mode=`<span class="pl sm" style="margin:0">${[['light','Light'],['dark','Dark'],['system','System']].map(x=>`<button class="${th===x[0]?'on':''}" onclick="setPref('bgl_th','${x[0]}')">${x[1]}</button>`).join('')}</span>`;
  const sws=[['sage','Sage','#2f5d50'],['blue','Cornflower','#35618f'],['terracotta','Terracotta','#9c4a2f'],['plum','Plum','#6a4c7d']].map(x=>`<button aria-label="${x[1]}" aria-pressed="${ac===x[0]}" style="width:28px;height:28px;min-height:28px;border-radius:50%;border:2px solid var(--card);background:${x[2]};padding:0;${ac===x[0]?'box-shadow:0 0 0 2px var(--tx)':''}" onclick="setPref('bgl_ac','${x[0]}')"></button>`).join('');
+ const dws=DICE.map((x,i)=>`<button aria-label="${x[0]}" aria-pressed="${DCI()===i}" style="width:28px;height:28px;min-height:28px;border-radius:50%;border:2px solid var(--card);background:${x[1]};padding:0;box-shadow:inset 0 0 0 3px ${x[2]}${DCI()===i?',0 0 0 2px var(--tx)':''}" onclick="setDice(${i})"></button>`).join('');
  return `<div class="card" style="padding:10px 14px 2px"><small style="letter-spacing:.08em;text-transform:uppercase">Appearance</small>`+
-  prow('Mode',mode)+prow('Accent colour',`<span class="row" style="gap:10px;flex-wrap:nowrap">${sws}</span>`)+prow('Flourish',sw(fl(),`setFl('${fl()?'off':'on'}')`))+prow('Sound',sw(SND(),`setSnd('${SND()?'off':'on'}')`),1)+`</div>`+
+  prow('Mode',mode)+prow('Accent colour',`<span class="row" style="gap:10px;flex-wrap:nowrap">${sws}</span>`)+prow('Dice colour',`<span class="row" style="gap:10px;flex-wrap:nowrap">${dws}</span>`)+prow('Flourish',sw(fl(),`setFl('${fl()?'off':'on'}')`))+prow('Sound',sw(SND(),`setSnd('${SND()?'off':'on'}')`))+prow('Vibration',sw(VIB(),`setVib('${VIB()?'off':'on'}')`),1)+`</div>`+
   (S.player?`<div class="card"><h2>Player</h2><p style="margin:0 0 10px">Playing as <b>${esc(S.player)}</b></p><button class="b w" onclick="S.player='';localStorage.removeItem('bgl_p');S.rules=false;render()">Change player</button></div>`:'')};
 window.setFl=v=>{localStorage.setItem('bgl_fl',v);render()};
 window.setSnd=v=>{localStorage.setItem('bgl_snd',v);render()};
+window.setVib=v=>{localStorage.setItem('bgl_vib',v);render();if(v==='on')vib(40)};
+window.setDice=i=>{localStorage.setItem('bgl_dc',String(i));render()};
+/* top and bottom bars follow the accent colour (works where the browser honours theme-color) */
+const TC={sage:'#2f5d50',blue:'#35618f',terracotta:'#9c4a2f',plum:'#6a4c7d'};
+const AP0=applyPrefs;applyPrefs=function(){AP0();try{const m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',TC[localStorage.getItem('bgl_ac')||'sage']||TC.sage)}catch(e){}};
+try{applyPrefs()}catch(e){}
 window.adminOut=()=>{S.pass='';sessionStorage.removeItem('bgl_a');S.admin=false;S.br=0;load()};
 /* ---------- d20: tap the BGL icon ---------- */
-const D20='<svg id="d20" viewBox="0 0 100 100" style="width:var(--ds);height:var(--ds);cursor:pointer;overflow:visible"><g id="d20g"><polygon points="50,6 88,28 88,72 50,94 12,72 12,28" fill="#2a2119" stroke="#e8b04a" stroke-width="2.5" stroke-linejoin="round"/><polygon points="50,14 84,74 16,74" fill="none" stroke="#e8b04a" stroke-width="2" stroke-linejoin="round"/><path d="M50 14V6M50 14L12 28M50 14L88 28M16 74L12 28M16 74L12 72M16 74L50 94M84 74L88 28M84 74L88 72M84 74L50 94" stroke="#e8b04a" stroke-width="1.5" fill="none" opacity=".7"/></g><text id="d20n" x="50" y="62" text-anchor="middle" font-size="24" font-weight="700" fill="#ffd27a" stroke="none" font-family="system-ui,sans-serif">20</text></svg>';
+const D20f=()=>{const c=DICE[DCI()];return '<svg id="d20" viewBox="0 0 100 100" style="width:var(--ds);height:var(--ds);cursor:pointer;overflow:visible"><g id="d20g"><polygon points="50,6 88,28 88,72 50,94 12,72 12,28" fill="'+c[1]+'" stroke="'+c[2]+'" stroke-width="2.5" stroke-linejoin="round"/><polygon points="50,14 84,74 16,74" fill="none" stroke="'+c[2]+'" stroke-width="2" stroke-linejoin="round"/><path d="M50 14V6M50 14L12 28M50 14L88 28M16 74L12 28M16 74L12 72M16 74L50 94M84 74L88 28M84 74L88 72M84 74L50 94" stroke="'+c[2]+'" stroke-width="1.5" fill="none" opacity=".7"/></g><text id="d20n" x="50" y="62" text-anchor="middle" font-size="24" font-weight="700" fill="'+c[3]+'" stroke="none" font-family="system-ui,sans-serif">20</text></svg>'};
 let AC=null;const RH=[];
-const vib=p=>{try{if(navigator.vibrate&&!matchMedia('(prefers-reduced-motion:reduce)').matches)navigator.vibrate(p)}catch(e){}};
-const tk=(f,t,v)=>{if(!SND())return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;g.gain.setValueAtTime(v,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+t);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+t)}catch(e){}};
+const vib=p=>{try{if(VIB()&&navigator.vibrate&&!matchMedia('(prefers-reduced-motion:reduce)').matches)navigator.vibrate(p)}catch(e){}};
+const tn=(type,f1,f2,t,v)=>{if(!SND())return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();const o=AC.createOscillator(),g=AC.createGain(),n=AC.currentTime;o.type=type;o.frequency.setValueAtTime(f1,n);if(f2)o.frequency.exponentialRampToValueAtTime(f2,n+t);g.gain.setValueAtTime(v,n);g.gain.exponentialRampToValueAtTime(.0001,n+t);o.connect(g);g.connect(AC.destination);o.start(n);o.stop(n+t)}catch(e){}};
+const tick=()=>tn('triangle',1500,900,.03,.35),thud=()=>{tn('triangle',240,90,.18,.8);tn('square',2000,1200,.02,.2)};
 const rhH=()=>RH.length?'Recent rolls'+RH.map((v,i)=>`<div${i?'':' class="n"'}>${v}</div>`).join(''):'';
 const rnd=()=>{const a=new Uint32Array(1);do{crypto.getRandomValues(a)}while(a[0]>=4294967280);return a[0]%20+1};
-function d20(){if($('#dice'))return;const o=document.createElement('div');o.id='dice';o.innerHTML='<div class="dc">'+D20+'</div><p id="d20h">Tap the die to roll</p><div class="d20r" id="d20r">'+rhH()+'</div>';document.body.appendChild(o);
+function d20(){if($('#dice'))return;const o=document.createElement('div');o.id='dice';{const c=DICE[DCI()];o.style.setProperty('--df',c[1]);o.style.setProperty('--ds',c[2]);o.style.setProperty('--dn',c[3]);o.style.setProperty('--dsb',c[2]+'66')}
+ try{if(SND()){AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}}catch(e){}
+ o.innerHTML='<div class="dc">'+D20f()+'</div><p id="d20h">Tap the die to roll</p><div class="d20r" id="d20r">'+rhH()+'</div>';document.body.appendChild(o);
  let busy=0,iv=0,to=0,k=0;const close=()=>{clearInterval(iv);clearTimeout(to);o.remove()};
  o.addEventListener('click',e=>{if(!e.target.closest('#d20')){close();return}if(busy)return;busy=1;
   const g=$('#d20g'),n=$('#d20n'),h=$('#d20h'),rr=matchMedia('(prefers-reduced-motion:reduce)').matches;
-  h.textContent='Rolling...';n.setAttribute('opacity','.6');vib(10);tk(300,.05,.08);g.classList.remove('dr');void g.getBoundingClientRect();g.classList.add('dr');
-  iv=setInterval(()=>{n.textContent=rnd();tk(500,.03,.04);if(k++%2===0)vib(8)},70);
-  to=setTimeout(()=>{clearInterval(iv);const r=rnd();n.textContent=r;n.setAttribute('opacity','1');busy=0;vib(40);tk(160,.15,.15);RH.unshift(r);if(RH.length>5)RH.length=5;const rl=$('#d20r');if(rl)rl.innerHTML=rhH();h.textContent=r===20?'Natural 20!':r===1?'Critical fail...':'Tap the die to roll again';if(r===20)confetti()},rr?200:1300)})}
+  h.textContent='Rolling...';n.setAttribute('opacity','.6');vib(10);tick();g.classList.remove('dr');void g.getBoundingClientRect();g.classList.add('dr');
+  iv=setInterval(()=>{n.textContent=rnd();tick();if(k++%2===0)vib(8)},70);
+  to=setTimeout(()=>{clearInterval(iv);const r=rnd();n.textContent=r;n.setAttribute('opacity','1');busy=0;vib(40);thud();RH.unshift(r);if(RH.length>5)RH.length=5;const rl=$('#d20r');if(rl)rl.innerHTML=rhH();h.textContent=r===20?'Natural 20!':r===1?'Critical fail...':'Tap the die to roll again';if(r===20)confetti()},rr?200:1300)})}
 const AV0=adminV;adminV=function(){return '<div class="row" style="margin-bottom:10px"><button class="b" onclick="S.admin=false;S.edit=null;render();scrollTo(0,0)">\u2190 Back to app</button></div>'+AV0()};
 /* ---------- Admin: finale + replay ---------- */
 const A0=aAwards;aAwards=function(){const on=S.d.finaleOn;
@@ -643,7 +656,7 @@ window.replay=()=>{const p=val('rpp');if(confirm(p?'Replay all pop-ups for '+p+'
 /* ---------- Doors: tap your rank = Backroom; press and hold ? = admin unlock; tap the BGL icon = d20 ---------- */
 let t=0,lp=0;const qb=e=>e.target.closest&&e.target.closest('button[aria-label="Rules"]');
 const toBR=()=>{S.br=1;S.rules=false;S.admin=false;render();scrollTo(0,0)},toAdm=()=>{S.admin=true;S.rules=false;S.br=0;render();scrollTo(0,0)};
-document.addEventListener('pointerdown',e=>{lp=0;clearTimeout(t);if(qb(e))t=setTimeout(()=>{lp=1;if(navigator.vibrate)navigator.vibrate(30);toAdm()},650)});
+document.addEventListener('pointerdown',e=>{lp=0;clearTimeout(t);if(qb(e))t=setTimeout(()=>{lp=1;vib(30);toAdm()},650)});
 ['pointerup','pointercancel'].forEach(v=>document.addEventListener(v,()=>clearTimeout(t)));
 document.addEventListener('contextmenu',e=>{if(qb(e))e.preventDefault()});
 document.addEventListener('click',e=>{if(lp&&qb(e)){e.stopImmediatePropagation();e.preventDefault();lp=0;return}
