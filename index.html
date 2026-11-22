@@ -465,7 +465,7 @@ async function saveEdit(){
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.code&&S.d&&!S.busy&&Date.now()-S.d._t>30000)load()});
 applyPrefs();render();load();
 </script>
-<!-- BGL v8.6 add-on (replaces the earlier v8 add-on block entirely: delete the old block from its first comment line to its closing script tag, then paste this in the same place). Paste this whole block after the main script has closed and before the closing body tag. Never inside the existing script.
+<!-- BGL v8.7 add-on (replaces the earlier v8.6 add-on block entirely: delete the old block from its first comment line to its closing script tag, then paste this in the same place). Paste this whole block after the main script has closed and before the closing body tag. Never inside the existing script.
      It only adds code and cannot stop the app from loading: if anything in it fails, the app carries on as before.
      Also put backroom.jpg in the same folder as index.html. -->
 <style>
@@ -491,7 +491,10 @@ button[aria-label=Admin]{display:none}[data-rank],h1 img{cursor:pointer}.pl.sm b
 .bt .cw{display:block;position:relative;width:60px;height:60px;margin:0 auto 4px}.bt .cw .bgd.sm{margin:0}
 .bt .bd{position:absolute;top:-4px;right:-8px;background:var(--ac2);color:var(--ac);font-size:11px;font-weight:600;line-height:17px;padding:0 6px;border-radius:10px;border:2px solid var(--card);box-sizing:content-box}
 .bt .lb{display:flex;align-items:flex-start;justify-content:center;min-height:2.5em}
-#dice{overflow-y:auto}.d20r{margin-top:14px;text-align:center;color:#cdbfa6;font-size:12px}.d20r div{width:96px;margin:6px auto 0;padding:4px 0;border-radius:10px;border:1px solid #3a2e24;font-size:15px;font-weight:700;color:#cdbfa6}.d20r div.n{border-color:#e8b04a;color:#ffd27a}
+#app .hint{display:none!important}
+#dice{display:block;overflow:hidden;--ds:min(260px,34vh)}#dice .dc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);line-height:0}
+#d20h{position:absolute;left:0;right:0;top:calc(50% + var(--ds)/2 + 10px);margin:0;text-align:center;font-size:14px;color:#cdbfa6;pointer-events:none}
+.d20r{position:absolute;left:0;right:0;top:calc(50% + var(--ds)/2 + 40px);text-align:center;color:#cdbfa6;font-size:12px;pointer-events:none}.d20r div{width:90px;margin:4px auto 0;padding:2px 0;border-radius:10px;border:1px solid #3a2e24;font-size:14px;font-weight:700;color:#cdbfa6}.d20r div.n{border-color:#e8b04a;color:#ffd27a}
 </style>
 <script>
 try{(function(){
@@ -527,10 +530,13 @@ b4:'<path d="M12 21v-8M12 13c0-4-3-6-7-6 0 4 3 6 7 6zM12 15c0-3 2-5 6-5 0 3-2 5-
 b5:'<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>'};
 const art=(id,s)=>A(ART[id]||ICON.medal,s);
 /* seen pop-ups are remembered on the server per player; LOC covers the moment before the next refresh */
-const LOC=new Set(),kk=k=>S.player+'|'+k,oldSrv=()=>!(S.d&&S.d.ver),lk=()=>'bgl_seen2_'+S.player;
+const LOC=new Set(),kk=k=>S.player+'|'+k,oldSrv=()=>!(S.d&&S.d.ver),lk=()=>'bgl_seen2_'+S.player,pkey=()=>'bgl_pend_'+S.player;
 const locGet=()=>{try{return JSON.parse(localStorage.getItem(lk()))||[]}catch(e){return[]}};
-const isSeen=k=>LOC.has(kk(k))||((S.d&&S.d.seen)||[]).indexOf(k)>=0||(oldSrv()&&locGet().indexOf(k)>=0);
-const markSeen=k=>{LOC.add(kk(k));if(oldSrv()){const a=locGet();a.push(k);try{localStorage.setItem(lk(),JSON.stringify(a))}catch(e){}}try{api('ack',{keys:[k]}).catch(()=>{})}catch(e){}};
+const pGet=()=>{try{return JSON.parse(localStorage.getItem(pkey()))||[]}catch(e){return[]}},pSet=a=>{try{localStorage.setItem(pkey(),JSON.stringify(a))}catch(e){}};
+/* seen = server list + this session + saves not yet confirmed by the server (kept on the phone and retried) */
+const isSeen=k=>LOC.has(kk(k))||((S.d&&S.d.seen)||[]).indexOf(k)>=0||pGet().indexOf(k)>=0||(oldSrv()&&locGet().indexOf(k)>=0);
+const sendAck=ks=>{try{api('ack',{keys:ks}).then(r=>{if(r&&r.ok){const p=pGet().filter(x=>ks.indexOf(x)<0);pSet(p)}}).catch(()=>{})}catch(e){}};
+const markSeen=k=>{LOC.add(kk(k));const p=pGet();if(p.indexOf(k)<0){p.push(k);pSet(p)}if(oldSrv()){const a=locGet();a.push(k);try{localStorage.setItem(lk(),JSON.stringify(a))}catch(e){}}sendAck([k])};
 const fl=()=>localStorage.getItem('bgl_fl')!=='off';
 const SND=()=>localStorage.getItem('bgl_snd')!=='off';
 const FIN=['Better luck next time. May the dice rolls be ever in your favour.','The dice gods were not kind this season. They\u2019ll be watching next time.','The dice have spoken, and they mumbled. Redemption awaits next season.','A noble season, a cruel set of dice. Roll again.','Fortune favours the bold, and you\u2019re getting bolder. See you next season.'];
@@ -566,6 +572,9 @@ function fx(){
  if(!S.done)S.doneFx=0;else if(!S.doneFx&&/^Logged:/.test(S.done)){S.doneFx=1;const b=document.querySelector('.card.ok b');if(b&&Math.random()<.05)b.textContent=S.done+' '+RARE[Math.floor(Math.random()*3)]}
  const d=S.d;if(!d||d.admin||!S.player||S.admin||S.rules||$('#pop')||$('#dice'))return;
  const m=d.me;
+ if(!d._pf&&d._t&&Date.now()-d._t<120000)d._pf=1;   /* only live server data can trigger pop-ups, never the stored copy shown on first paint */
+ if(!d._pf)return;
+ if(d.ver&&!d._fl){d._fl=1;const sv=d.seen||[],pn=pGet().filter(x=>sv.indexOf(x)<0);pSet(pn);if(pn.length)sendAck(pn.slice(0,20))}
  if(d.finaleOn&&d.fin&&!isSeen('fin')){markSeen('fin');showFin();return}
  for(const a of (d.ach||[])){const k='a:'+a.id;if(!isSeen(k)){markSeen(k);pop({art:art(a.id),kicker:'Secret achievement unlocked',title:a.title,msg:a.msg,conf:1,btn:'Nice'});return}}
  if(m){const mxp=2*d.table[0].reduce((x,y)=>x+y,0)+2*Math.max(...d.table[0]);
@@ -611,13 +620,13 @@ window.setFl=v=>{localStorage.setItem('bgl_fl',v);render()};
 window.setSnd=v=>{localStorage.setItem('bgl_snd',v);render()};
 window.adminOut=()=>{S.pass='';sessionStorage.removeItem('bgl_a');S.admin=false;S.br=0;load()};
 /* ---------- d20: tap the BGL icon ---------- */
-const D20='<svg id="d20" viewBox="0 0 100 100" style="width:260px;height:260px;cursor:pointer;overflow:visible"><g id="d20g"><polygon points="50,6 88,28 88,72 50,94 12,72 12,28" fill="#2a2119" stroke="#e8b04a" stroke-width="2.5" stroke-linejoin="round"/><polygon points="50,14 84,74 16,74" fill="none" stroke="#e8b04a" stroke-width="2" stroke-linejoin="round"/><path d="M50 14V6M50 14L12 28M50 14L88 28M16 74L12 28M16 74L12 72M16 74L50 94M84 74L88 28M84 74L88 72M84 74L50 94" stroke="#e8b04a" stroke-width="1.5" fill="none" opacity=".7"/></g><text id="d20n" x="50" y="62" text-anchor="middle" font-size="24" font-weight="700" fill="#ffd27a" stroke="none" font-family="system-ui,sans-serif">20</text></svg>';
+const D20='<svg id="d20" viewBox="0 0 100 100" style="width:var(--ds);height:var(--ds);cursor:pointer;overflow:visible"><g id="d20g"><polygon points="50,6 88,28 88,72 50,94 12,72 12,28" fill="#2a2119" stroke="#e8b04a" stroke-width="2.5" stroke-linejoin="round"/><polygon points="50,14 84,74 16,74" fill="none" stroke="#e8b04a" stroke-width="2" stroke-linejoin="round"/><path d="M50 14V6M50 14L12 28M50 14L88 28M16 74L12 28M16 74L12 72M16 74L50 94M84 74L88 28M84 74L88 72M84 74L50 94" stroke="#e8b04a" stroke-width="1.5" fill="none" opacity=".7"/></g><text id="d20n" x="50" y="62" text-anchor="middle" font-size="24" font-weight="700" fill="#ffd27a" stroke="none" font-family="system-ui,sans-serif">20</text></svg>';
 let AC=null;const RH=[];
 const vib=p=>{try{if(navigator.vibrate&&!matchMedia('(prefers-reduced-motion:reduce)').matches)navigator.vibrate(p)}catch(e){}};
 const tk=(f,t,v)=>{if(!SND())return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;g.gain.setValueAtTime(v,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+t);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+t)}catch(e){}};
 const rhH=()=>RH.length?'Recent rolls'+RH.map((v,i)=>`<div${i?'':' class="n"'}>${v}</div>`).join(''):'';
 const rnd=()=>{const a=new Uint32Array(1);do{crypto.getRandomValues(a)}while(a[0]>=4294967280);return a[0]%20+1};
-function d20(){if($('#dice'))return;const o=document.createElement('div');o.id='dice';o.innerHTML=D20+'<p id="d20h" style="margin:14px 0 0;font-size:14px;color:#cdbfa6">Tap the die to roll</p><div class="d20r" id="d20r">'+rhH()+'</div>';document.body.appendChild(o);
+function d20(){if($('#dice'))return;const o=document.createElement('div');o.id='dice';o.innerHTML='<div class="dc">'+D20+'</div><p id="d20h">Tap the die to roll</p><div class="d20r" id="d20r">'+rhH()+'</div>';document.body.appendChild(o);
  let busy=0,iv=0,to=0,k=0;const close=()=>{clearInterval(iv);clearTimeout(to);o.remove()};
  o.addEventListener('click',e=>{if(!e.target.closest('#d20')){close();return}if(busy)return;busy=1;
   const g=$('#d20g'),n=$('#d20n'),h=$('#d20h'),rr=matchMedia('(prefers-reduced-motion:reduce)').matches;
